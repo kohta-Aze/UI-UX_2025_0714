@@ -15,28 +15,30 @@ body {
 }
 
 /* メインコンテンツを囲むラッパー */
+/* メインコンテンツを囲むラッパー */
 .main-content-wrapper {
     display: flex;
-    flex-direction: column; /* グリッドとその下のパネルを縦に並べる */
-    align-items: center;   /* 全体を中央寄せ */
+    flex-direction: row; /* ★ column から row に変更（PCで横並びにするため） */
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px; /* ★ 地図と操作パネルの間のスペース */
     width: 100%;
-    max-width: 1200px; /* 全体の最大幅を制限 */
+    max-width: 1400px; /* ★ 横並びのため最大幅を広げる */
 }
 
 /* --- メインのグリッドコンテナ (.container) --- */
 .container {
     position: relative;
-    width: 800px; /* グリッドの推奨幅 */
-    height: 600px; /* グリッドの推奨高さ */
-    max-width: 100%; /* 画面幅が狭い場合でも対応 */
+    width: 800px;
+    height: 600px;
+    max-width: 100%;
     max-height: 80vh;
     border: 1px solid #ccc;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px; /* 下のパネルとの間にスペース */
+    margin-bottom: 0; /* ★ 横並びになるため不要 */
     flex-shrink: 0;
 }
-
 /* --- 軸のスタイル (変更なし) --- */
 .axis-y {
     position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -92,27 +94,30 @@ body {
 .task-icon.dragging-just-finished { pointer-events: none; }
 
 /* --- 下部パネルのレイアウト (新規または大幅変更) --- */
+/* --- 下部パネルのレイアウト (新規または大幅変更) --- */
 .bottom-panel {
-    display: flex; /* 子要素 (left-section と ai-image-generator) を横に並べる */
-    justify-content: center; /* 水平中央寄せ */
-    align-items: flex-start; /* 上部に寄せる */
-    gap: 30px; /* 各セクション間のスペース */
-    width: 100%;
-    max-width: 1200px; /* main-content-wrapperの幅に合わせる */
-    flex-wrap: wrap; /* 画面が狭い場合に折り返す */
+    display: flex;
+    flex-direction: column; /* ★ 横並びだったのを縦積みに変更 */
+    align-items: center;
+    gap: 20px;
+    width: 380px; /* ★ 右側パネル全体の幅を指定 */
+    flex-shrink: 0;
 }
 
 .left-section {
     display: flex;
-    flex-direction: column; /* テキストフォームとパレットを縦に並べる */
-    align-items: center; /* 内部を中央寄せ */
-    gap: 20px; /* テキストフォームとパレットの間のスペース */
-    flex-shrink: 0;
-    flex-grow: 1; /* 利用可能なスペースを埋める */
-    min-width: 300px; /* 最小幅を設定 */
-    max-width: 800px; /* 最大幅を設定 */
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%; /* ★ 親要素(.bottom-panel)の幅に合わせる */
 }
 
+/* AI画像生成機能 */
+.ai-image-generator {
+    /* ... */
+    width: 100%; /* ★ 親要素(.bottom-panel)の幅に合わせる */
+    /* ... */
+}
 /* --- テキスト入力フォーム (調整) --- */
 .add-task-form {
     display: flex;
@@ -271,32 +276,30 @@ body {
 }
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
 
-/* --- レスポンシブ対応 (スマートフォン向け) --- */
 @media (max-width: 768px) {
 
-    /* --- 全体的なレイアウト調整 --- */
-    body {
-        padding: 10px; /* 全体の余白を少し狭くする */
-    }
+    /* ... 既存のスマホ用スタイル ... */
 
-    .main-content-wrapper {
-        padding: 0;
-    }
+    /* ★ このブロックを追加 */
+    .main-content-wrapper {
+        flex-direction: column; /* スマホでは縦積みに戻す */
+        gap: 0;
+    }
 
-    /* --- メインのグリッドコンテナのサイズを調整 --- */
-    .container {
-        width: 100%;       /* 横幅を画面いっぱいに */
-        height: auto;       /* 高さを自動調整に */
-        aspect-ratio: 4 / 3; /* 縦横比を4:3に保つ */
-        max-height: none;    /* 最大高さの制限を解除 */
-    }
+    .container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        max-height: none;
+        margin-bottom: 20px; /* 下のパネルとのスペースを復活 */
+    }
 
-    /* --- 下部パネルのレイアウトを縦積みに変更 --- */
-    .bottom-panel {
-        flex-direction: column; /* 各セクションを縦に並べる */
-        align-items: center;    /* 中央に寄せる */
-        gap: 20px;              /* セクション間のスペース */
-    }
+    .bottom-panel {
+        width: 100%;
+    }
+
+    /* ... 既存のスマホ用スタイル ... */
+}
 
     .left-section,
     .ai-image-generator {
