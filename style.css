@@ -1,19 +1,51 @@
-/* --- 全体的なレイアウト設定 (変更なし) --- */
+/* --- 全体的なレイアウト設定 --- */
 body {
     margin: 0;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 少しモダンなフォントに変更 */
     background-color: #f0f0f0;
     display: flex;
     flex-direction: column; /* 全体を縦方向に並べる */
     justify-content: flex-start; /* 上から配置 */
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 0; /* ヘッダーが上端にくるようにパディングを0にする */
     box-sizing: border-box;
     overflow-y: auto; /* 必要に応じてスクロール */
 }
 
-/* 上部セクションのラッパー (グリッドと右上パネル) */
+/* --- ヘッダーのスタイル --- */
+.main-header {
+    width: 100%;
+    background-color: #2c3e50; /* ダークネイビー */
+    color: #ecf0f1; /* 明るいグレー */
+    padding: 15px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center; /* 中央揃え */
+    align-items: center;
+    margin-bottom: 25px; /* メインコンテンツとの間隔 */
+    box-sizing: border-box;
+    flex-shrink: 0; /* ヘッダーが縮まないように */
+}
+
+.header-content {
+    max-width: 1400px; /* 全体のコンテンツ幅に合わせる */
+    width: 100%;
+    display: flex;
+    justify-content: center; /* タイトルを中央に */
+    align-items: center;
+}
+
+.site-title {
+    margin: 0;
+    font-size: 2.2em; /* 少し大きめに */
+    font-weight: 600; /* 太すぎず、しっかりとした印象 */
+    letter-spacing: 1px; /* 少し文字間を広げる */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* 控えめな影 */
+}
+
+
+/* --- 上部セクションのラッパー (グリッドと右上パネル) --- */
 .top-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
@@ -22,8 +54,7 @@ body {
     gap: 30px; /* グリッドと右上パネルの間のスペース */
     width: 100%;
     max-width: 1400px; /* 全体の最大幅 */
-    /* ここを調整します。下のセクションとの間隔を小さくします */
-    margin-bottom: 20px; /* 30px から 20px に減らしました */
+    margin-bottom: 20px; /* 下のセクションとの間隔 */
 }
 
 /* --- メインのグリッドコンテナ (.container) (変更なし) --- */
@@ -156,7 +187,7 @@ body {
     z-index: 1000;
 }
 
-/* 下部セクションのラッパー (過去のプロジェクトと追加機能/AI生成) */
+/* 下部セクションのラッパー (過去のプロジェクトと追加機能/AI生成) (変更なし) */
 .bottom-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
@@ -167,22 +198,19 @@ body {
     max-width: 1400px; /* top-section-wrapper と同じ最大幅 */
     box-sizing: border-box;
     padding: 0 20px; /* 左右の余白 */
-    /* ここにmargin-topを追加して、上のセクションとの間隔を調整することもできます */
-    /* margin-top: 20px; */
 }
 
 /* 左下のパネル (保存ボタンと過去のプロジェクトをまとめる) */
 .left-bottom-panel {
     display: flex;
     flex-direction: column; /* 縦並び */
-    /* ここを調整します。ボタンとアーカイブセクションの間隔を小さくします */
-    gap: 15px; /* 20px から 15px に減らしました */
+    gap: 15px; /* ボタンとアーカイブセクションの間隔 */
     width: 800px; /* グリッドマップと同じ幅 */
     flex-shrink: 0;
 }
 
 
-/* プロジェクト保存ボタンのスタイル */
+/* プロジェクト保存ボタンのスタイル (変更なし) */
 .save-project-button {
     padding: 15px 30px; /* 少し大きめに */
     background-color: #20c997;
@@ -197,7 +225,6 @@ body {
     width: 100%; /* 親要素の幅いっぱいに */
     box-sizing: border-box; /* パディングを含めて幅を計算 */
     text-align: center;
-    /* margin-bottom は left-bottom-panel の gap で調整されるので不要です */
 }
 
 .save-project-button:hover {
@@ -206,7 +233,7 @@ body {
 }
 
 
-/* アーカイブセクションのスタイル (変更なし、ただし親要素が変更されたため幅の指定は調整) */
+/* アーカイブセクションのスタイル (変更なし) */
 .archive-section {
     width: 100%; /* 親要素 (left-bottom-panel) の幅いっぱいに */
     min-height: 200px; /* ある程度の高さを確保 */
@@ -444,7 +471,7 @@ body {
 
     /* 各パネルが横幅いっぱいに */
     .top-right-panel,
-    .left-bottom-panel, /* 修正 */
+    .left-bottom-panel,
     .archive-section,
     .additional-and-ai-panel-wrapper {
         width: 100%;
@@ -457,11 +484,19 @@ body {
         flex-direction: column;
         gap: 20px;
     }
+
+    /* ヘッダーの調整 */
+    .main-header {
+        padding: 10px 15px;
+    }
+    .site-title {
+        font-size: 1.8em;
+    }
 }
 
 @media (max-width: 768px) { /* スマホ向け */
     body {
-        padding: 10px;
+        padding: 0; /* ヘッダーがあるのでbody全体のパディングはなし */
     }
 
     .top-section-wrapper, .bottom-section-wrapper {
@@ -472,7 +507,7 @@ body {
     .top-right-panel,
     .add-task-form-and-palette,
     .draggable-icons-container,
-    .left-bottom-panel, /* 修正 */
+    .left-bottom-panel,
     .archive-section,
     .additional-features-panel,
     .ai-image-generator {
@@ -506,5 +541,13 @@ body {
     /* アーカイブリストの1列表示 */
     .archive-list {
         grid-template-columns: 1fr;
+    }
+
+    /* ヘッダーの調整 */
+    .main-header {
+        padding: 10px;
+    }
+    .site-title {
+        font-size: 1.5em;
     }
 }
