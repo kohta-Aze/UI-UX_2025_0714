@@ -410,15 +410,11 @@ gridContainer.addEventListener('dragover', (e) => {
     e.dataTransfer.dropEffect = 'copy'; // パレットやAI生成アイコンからのドロップはコピー
 });
 
-// ... 既存のコード ...
-    // ... 既存のコード ...
-
-// script.js
-// ... 既存のコード ...
 
 gridContainer.addEventListener('drop', (e) => {
     e.preventDefault();
-
+    e.stopPropagation(); 
+    
     console.log('Drop event fired.');
     console.log('draggedTaskName:', draggedTaskName);
     console.log('draggedGeneratedImageSrc:', draggedGeneratedImageSrc);
