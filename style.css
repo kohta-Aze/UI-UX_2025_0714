@@ -270,3 +270,65 @@ body {
     color: #aaa; cursor: pointer; transition: color 0.2s;
 }
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
+
+/* --- レスポンシブ対応 (スマートフォン向け) --- */
+@media (max-width: 768px) {
+
+    /* --- 全体的なレイアウト調整 --- */
+    body {
+        padding: 10px; /* 全体の余白を少し狭くする */
+    }
+
+    .main-content-wrapper {
+        padding: 0;
+    }
+
+    /* --- メインのグリッドコンテナのサイズを調整 --- */
+    .container {
+        width: 100%;       /* 横幅を画面いっぱいに */
+        height: auto;       /* 高さを自動調整に */
+        aspect-ratio: 4 / 3; /* 縦横比を4:3に保つ */
+        max-height: none;    /* 最大高さの制限を解除 */
+    }
+
+    /* --- 下部パネルのレイアウトを縦積みに変更 --- */
+    .bottom-panel {
+        flex-direction: column; /* 各セクションを縦に並べる */
+        align-items: center;    /* 中央に寄せる */
+        gap: 20px;              /* セクション間のスペース */
+    }
+
+    .left-section,
+    .ai-image-generator {
+        width: 100%;       /* 横幅を画面いっぱいに */
+        max-width: 100%;   /* 最大幅の制限を解除 */
+    }
+
+    /* --- タスク追加フォームのレイアウトを調整 --- */
+    .add-task-form {
+        flex-direction: column; /* 入力欄とボタンを縦に並べる */
+        align-items: stretch;   /* 幅を親要素に合わせる */
+    }
+    .add-task-form input[type="text"],
+    .add-task-form button {
+        width: 100%; /* 幅を100%に */
+    }
+
+    /* --- AIアイコン生成パネルの調整 --- */
+    .ai-image-generator {
+        width: 100%; /* 横幅を画面いっぱいに */
+    }
+
+    /* --- タスク詳細モーダルの調整 --- */
+    .task-detail-content {
+        width: 90vw; /* 画面幅の90%に設定 */
+    }
+    .task-detail-content .buttons {
+        flex-direction: column; /* ボタンを縦に並べる */
+        gap: 15px;
+    }
+    .task-detail-content button {
+        width: 100%;
+    }
+
+}
