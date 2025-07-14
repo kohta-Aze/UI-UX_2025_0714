@@ -1,20 +1,18 @@
-/* style.css */
-
 /* --- 全体的なレイアウト設定 --- */
 body {
     margin: 0;
     font-family: sans-serif;
     background-color: #f0f0f0;
     display: flex;
+    flex-direction: column; /* ★ 縦方向に要素を並べるように変更 */
     justify-content: center; /* 水平中央寄せ */
-    align-items: flex-start; /* 上部に寄せる */
+    align-items: center; /* 中央に寄せる */
     min-height: 100vh;
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto; /* 縦スクロールを許可 */
 }
 
-/* メインコンテンツを囲むラッパー */
 /* メインコンテンツを囲むラッパー */
 .main-content-wrapper {
     display: flex;
@@ -24,6 +22,7 @@ body {
     gap: 30px; /* ★ 地図と操作パネルの間のスペース */
     width: 100%;
     max-width: 1400px; /* ★ 横並びのため最大幅を広げる */
+    margin-bottom: 40px; /* アーカイブセクションとの間にスペースを追加 */
 }
 
 /* --- メインのグリッドコンテナ (.container) --- */
@@ -93,7 +92,6 @@ body {
 .task-icon.dragging { cursor: grabbing; z-index: 1000; }
 .task-icon.dragging-just-finished { pointer-events: none; }
 
-/* --- 下部パネルのレイアウト (新規または大幅変更) --- */
 /* --- 下部パネルのレイアウト (新規または大幅変更) --- */
 .bottom-panel {
     display: flex;
@@ -276,7 +274,122 @@ body {
 }
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
 
+/* プロジェクト保存ボタンのスタイル */
+.save-project-button {
+    padding: 12px 25px;
+    background-color: #20c997; /* Teal color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    margin-top: 20px; /* 他の要素からのマージン */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.save-project-button:hover {
+    background-color: #17a27b;
+    transform: translateY(-2px);
+}
+
+/* アーカイブセクションのスタイル */
+.archive-section {
+    width: 100%;
+    max-width: 1400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 20px; /* メインコンテンツとの間のマージン */
+    box-sizing: border-box;
+}
+
+.archive-section h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.archive-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 適切なサイズで折り返すグリッド */
+    gap: 20px;
+}
+
+.archive-item {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+}
+
+.archive-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.archive-item h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #007bff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.archive-item p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.archive-item .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.archive-item button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.archive-item button.load-button {
+    background-color: #007bff;
+    color: white;
+}
+.archive-item button.load-button:hover {
+    background-color: #0056b3;
+}
+
+.archive-item button.delete-archive-button {
+    background-color: #dc3545;
+    color: white;
+}
+.archive-item button.delete-archive-button:hover {
+    background-color: #c82333;
+}
+
+
+/* --- レスポンシブ対応 --- */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
 
     /* ... 既存のスマホ用スタイル ... */
 
@@ -284,6 +397,7 @@ body {
     .main-content-wrapper {
         flex-direction: column; /* スマホでは縦積みに戻す */
         gap: 0;
+        margin-bottom: 20px; /* スマホでのアーカイブセクションとのスペース調整 */
     }
 
     .container {
@@ -299,39 +413,46 @@ body {
     }
 
     /* ... 既存のスマホ用スタイル ... */
-}
 
-    .left-section,
-    .ai-image-generator {
-        width: 100%;       /* 横幅を画面いっぱいに */
-        max-width: 100%;   /* 最大幅の制限を解除 */
-    }
+    .left-section,
+    .ai-image-generator {
+        width: 100%;        /* 横幅を画面いっぱいに */
+        max-width: 100%;    /* 最大幅の制限を解除 */
+    }
 
-    /* --- タスク追加フォームのレイアウトを調整 --- */
-    .add-task-form {
-        flex-direction: column; /* 入力欄とボタンを縦に並べる */
-        align-items: stretch;   /* 幅を親要素に合わせる */
-    }
-    .add-task-form input[type="text"],
-    .add-task-form button {
-        width: 100%; /* 幅を100%に */
-    }
+    /* --- タスク追加フォームのレイアウトを調整 --- */
+    .add-task-form {
+        flex-direction: column; /* 入力欄とボタンを縦に並べる */
+        align-items: stretch;    /* 幅を親要素に合わせる */
+    }
+    .add-task-form input[type="text"],
+    .add-task-form button {
+        width: 100%; /* 幅を100%に */
+    }
 
-    /* --- AIアイコン生成パネルの調整 --- */
-    .ai-image-generator {
-        width: 100%; /* 横幅を画面いっぱいに */
-    }
+    /* --- AIアイコン生成パネルの調整 --- */
+    .ai-image-generator {
+        width: 100%; /* 横幅を画面いっぱいに */
+    }
 
-    /* --- タスク詳細モーダルの調整 --- */
-    .task-detail-content {
-        width: 90vw; /* 画面幅の90%に設定 */
-    }
-    .task-detail-content .buttons {
-        flex-direction: column; /* ボタンを縦に並べる */
-        gap: 15px;
-    }
-    .task-detail-content button {
-        width: 100%;
-    }
+    /* --- タスク詳細モーダルの調整 --- */
+    .task-detail-content {
+        width: 90vw; /* 画面幅の90%に設定 */
+    }
+    .task-detail-content .buttons {
+        flex-direction: column; /* ボタンを縦に並べる */
+        gap: 15px;
+    }
+    .task-detail-content button {
+        width: 100%;
+    }
 
+    /* アーカイブセクションのスマホ対応 */
+    .archive-section {
+        padding: 20px 15px;
+    }
+
+    .archive-list {
+        grid-template-columns: 1fr; /* スマホでは1列表示 */
+    }
 }
