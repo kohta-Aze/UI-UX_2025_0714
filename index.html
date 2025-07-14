@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="right-column-container"> <div class="top-right-panel"> <div class="add-task-form">
+        <div class="top-right-column"> <div class="add-task-form-and-palette"> <div class="add-task-form">
                     <input type="text" id="newTaskName" placeholder="新しいタスク名を入力">
                     <button id="addTaskButton">タスクを追加</button>
                 </div>
@@ -91,38 +91,37 @@
                     </div>
                 </div>
             </div>
-
-            <div class="bottom-right-panel"> <div class="additional-features-panel">
-                    <h3>追加機能</h3>
-                    <button id="quickSaveButton">クイック保存</button>
-                    <button id="clearAllTasksButton">全タスク削除</button>
-                    <p>ここに今後の機能を追加できます。</p>
-                </div>
-
-                <div class="ai-image-generator">
-                    <h3>AIアイコン生成 (開発中)</h3>
-                    <input type="text" id="aiPromptInput" placeholder="生成したいアイコンのキーワード">
-                    <button id="generateIconButton">アイコンを生成</button>
-                    <div id="generatedIconPreview" class="generated-icon-preview">
-                        <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
-                        <p>ここに生成されたアイコンが表示されます</p>
-                    </div>
-                    <button id="addGeneratedIconButton" style="display: none;">生成アイコンを追加</button>
-                </div>
-            </div>
         </div>
     </div>
 
-    <div class="bottom-area-wrapper">
-        <div class="archive-section">
+    <div class="bottom-area-wrapper"> <div class="archive-section">
             <h2>過去のプロジェクト</h2>
             <div id="archiveList" class="archive-list">
                 <p id="noArchiveMessage">まだ保存されたプロジェクトはありません。</p>
             </div>
         </div>
-        <button id="saveProjectButton" class="save-project-button">現在のプロジェクトを保存</button>
+        
+        <div class="additional-features-and-ai-wrapper"> <div class="additional-features-panel">
+                <h3>追加機能</h3>
+                <button id="quickSaveButton">クイック保存</button>
+                <button id="clearAllTasksButton">全タスク削除</button>
+                <p>ここに今後の機能を追加できます。</p>
+            </div>
+
+            <div class="ai-image-generator">
+                <h3>AIアイコン生成 (開発中)</h3>
+                <input type="text" id="aiPromptInput" placeholder="生成したいアイコンのキーワード">
+                <button id="generateIconButton">アイコンを生成</button>
+                <div id="generatedIconPreview" class="generated-icon-preview">
+                    <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
+                    <p>ここに生成されたアイコンが表示されます</p>
+                </div>
+                <button id="addGeneratedIconButton" style="display: none;">生成アイコンを追加</button>
+            </div>
+        </div>
     </div>
 
+    <button id="saveProjectButton" class="save-project-button">現在のプロジェクトを保存</button>
 
     <div id="taskDetailModal" class="task-detail-modal">
         <div class="task-detail-content">
