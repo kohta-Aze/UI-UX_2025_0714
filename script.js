@@ -243,11 +243,10 @@ function createTaskElement(task) {
     gridContainer.addEventListener('touchend', dragEnd);
     gridContainer.addEventListener('mousemove', drag);
     gridContainer.addEventListener('touchmove', drag);
+    gridContainer.addEventListener('mousedown', dragStart);
+    gridContainer.addEventListener('touchstart', dragStart, { passive: false });
 
     // script.js
-// ... 既存のコード ...
-
-// ... 既存のコード ...
 
 function dragStart(e) {
     if (taskDetailModal.style.display === 'flex') {
@@ -277,13 +276,10 @@ function dragStart(e) {
         dragStartX = clientX;
         dragStartY = clientY;
 
-        // ★★★ この行を追加 ★★★
-        e.dataTransfer.effectAllowed = "move"; // 既存タスクは移動なので "move"
+        // ★★★ この行を削除してください ★★★
+        // e.dataTransfer.effectAllowed = "move"; 
     }
 }
-
-// ... 既存のコード ...
-// ... 既存のコード ...
    // script.js
 // ... 既存のコード ...
 
