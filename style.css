@@ -1,4 +1,4 @@
-/* --- 全体的なレイアウト設定 --- */
+/* --- 全体的なレイアウト設定 (変更なし) --- */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 少しモダンなフォントに変更 */
@@ -13,7 +13,7 @@ body {
     overflow-y: auto; /* 必要に応じてスクロール */
 }
 
-/* --- ヘッダーのスタイル --- */
+/* --- ヘッダーのスタイル (変更なし) --- */
 .main-header {
     width: 100%;
     background-color: #2c3e50; /* ダークネイビー */
@@ -45,7 +45,7 @@ body {
 }
 
 
-/* --- 上部セクションのラッパー (グリッドと右上パネル) --- */
+/* --- 上部セクションのラッパー (グリッドと右上パネル) (変更なし) --- */
 .top-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
@@ -100,11 +100,19 @@ body {
 .axis-x .arrow-right { border-left: 10px solid #333; right: 0; }
 .axis-x .arrow-left { border-right: 10px solid #333; left: 0; }
 
-/* --- グリッド背景 (変更なし) --- */
+/* --- グリッド背景の修正 --- */
 .grid-container {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: linear-gradient(to right, #eee 1px, transparent 1px), linear-gradient(to bottom, #eee 1px, transparent 1px);
-    background-size: 50px 50px;
+    /* 既存のグリッドラインを削除し、背景画像に置き換えます */
+    /* background-image: linear-gradient(to right, #eee 1px, transparent 1px), linear-gradient(to bottom, #eee 1px, transparent 1px); */
+    /* background-size: 50px 50px; */
+
+    /* ここを新しい画像と設定に置き換えます */
+    background-image: url('quadrant_background.png'); /* ここに作成した画像ファイルのパスを指定 */
+    background-size: cover; /* グリッド全体を覆うように画像を拡大縮小 */
+    background-position: center; /* 画像を中央に配置 */
+    background-repeat: no-repeat; /* 画像を繰り返さない */
+
     overflow: hidden;
     z-index: 1;
 }
@@ -200,7 +208,7 @@ body {
     padding: 0 20px; /* 左右の余白 */
 }
 
-/* 左下のパネル (保存ボタンと過去のプロジェクトをまとめる) */
+/* 左下のパネル (保存ボタンと過去のプロジェクトをまとめる) (変更なし) */
 .left-bottom-panel {
     display: flex;
     flex-direction: column; /* 縦並び */
@@ -454,7 +462,7 @@ body {
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
 
 
-/* --- レスポンシブ対応 --- */
+/* --- レスポンシブ対応 (変更なし) --- */
 @media (max-width: 1200px) { /* PCでも少し狭い場合の調整 */
     .top-section-wrapper, .bottom-section-wrapper {
         flex-direction: column; /* 横幅が狭くなったら縦積みに */
