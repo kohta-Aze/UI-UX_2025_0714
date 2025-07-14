@@ -13,7 +13,7 @@ body {
     overflow-y: auto; /* 必要に応じてスクロール */
 }
 
-/* 上部セクションのラッパー (グリッドと右上パネル) (変更なし) */
+/* 上部セクションのラッパー (グリッドと右上パネル) */
 .top-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
@@ -22,7 +22,8 @@ body {
     gap: 30px; /* グリッドと右上パネルの間のスペース */
     width: 100%;
     max-width: 1400px; /* 全体の最大幅 */
-    margin-bottom: 30px; /* 下のセクションとの間隔 */
+    /* ここを調整します。下のセクションとの間隔を小さくします */
+    margin-bottom: 20px; /* 30px から 20px に減らしました */
 }
 
 /* --- メインのグリッドコンテナ (.container) (変更なし) --- */
@@ -155,7 +156,7 @@ body {
     z-index: 1000;
 }
 
-/* 下部セクションのラッパー (過去のプロジェクトと追加機能/AI生成) (変更なし) */
+/* 下部セクションのラッパー (過去のプロジェクトと追加機能/AI生成) */
 .bottom-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
@@ -166,14 +167,16 @@ body {
     max-width: 1400px; /* top-section-wrapper と同じ最大幅 */
     box-sizing: border-box;
     padding: 0 20px; /* 左右の余白 */
-    /* margin-bottom は .save-project-button から削除されるので、ここでは不要 */
+    /* ここにmargin-topを追加して、上のセクションとの間隔を調整することもできます */
+    /* margin-top: 20px; */
 }
 
 /* 左下のパネル (保存ボタンと過去のプロジェクトをまとめる) */
 .left-bottom-panel {
     display: flex;
     flex-direction: column; /* 縦並び */
-    gap: 20px; /* ボタンとアーカイブセクションの間隔 */
+    /* ここを調整します。ボタンとアーカイブセクションの間隔を小さくします */
+    gap: 15px; /* 20px から 15px に減らしました */
     width: 800px; /* グリッドマップと同じ幅 */
     flex-shrink: 0;
 }
@@ -194,7 +197,7 @@ body {
     width: 100%; /* 親要素の幅いっぱいに */
     box-sizing: border-box; /* パディングを含めて幅を計算 */
     text-align: center;
-    margin-bottom: 0; /* left-bottom-panel の gap で調整 */
+    /* margin-bottom は left-bottom-panel の gap で調整されるので不要です */
 }
 
 .save-project-button:hover {
@@ -441,7 +444,7 @@ body {
 
     /* 各パネルが横幅いっぱいに */
     .top-right-panel,
-    .left-bottom-panel, /* 追加 */
+    .left-bottom-panel, /* 修正 */
     .archive-section,
     .additional-and-ai-panel-wrapper {
         width: 100%;
@@ -469,7 +472,7 @@ body {
     .top-right-panel,
     .add-task-form-and-palette,
     .draggable-icons-container,
-    .left-bottom-panel, /* 追加 */
+    .left-bottom-panel, /* 修正 */
     .archive-section,
     .additional-features-panel,
     .ai-image-generator {
