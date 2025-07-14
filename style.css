@@ -72,49 +72,44 @@ body {
 /* --- 軸のスタイル (変更なし) --- */
 .axis-y {
     position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 2px; background-color: #333; z-index: 5;
+    width: 2px;
+    background-color: transparent; /* Changed to transparent */
+    z-index: 5;
 }
-.axis-y .axis-icon {
-    display: none; /* Add this line */
-    /* position: absolute; top: 10px; left: 50%; transform: translateX(-50%); */
-    /* font-size: 2em; color: #555; */
+.axis-y .axis-icon { /* This was already set to display: none from previous request */
+    display: none;
 }
 .axis-y .arrow-up, .axis-y .arrow-down {
-    width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
-    position: absolute; left: 50%; transform: translateX(-50%);
+    display: none; /* Add this to hide the arrows */
+    /* width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; */
+    /* position: absolute; left: 50%; transform: translateX(-50%); */
 }
-.axis-y .arrow-up { border-bottom: 10px solid #333; top: 0; }
-.axis-y .arrow-down { border-top: 10px solid #333; bottom: 0; }
+/* No need for .axis-y .arrow-up { border-bottom: 10px solid #333; top: 0; } if display: none */
+/* No need for .axis-y .arrow-down { border-top: 10px solid #333; bottom: 0; } if display: none */
 
 .axis-x {
     position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
-    height: 2px; background-color: #333; z-index: 5;
+    height: 2px;
+    background-color: transparent; /* Changed to transparent */
+    z-index: 5;
 }
-.axis-x .axis-icon {
-    display: none; /* Add this line */
-    /* position: absolute; right: 10px; top: 50%; transform: translateY(-50%); */
-    /* font-size: 2em; color: #555; */
+.axis-x .axis-icon { /* This was already set to display: none from previous request */
+    display: none;
 }
 .axis-x .arrow-right, .axis-x .arrow-left {
-    width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
-    position: absolute; top: 50%; transform: translateY(-50%);
+    display: none; /* Add this to hide the arrows */
+    /* width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; */
+    /* position: absolute; top: 50%; transform: translateY(-50%); */
 }
-.axis-x .arrow-right { border-left: 10px solid #333; right: 0; }
-.axis-x .arrow-left { border-right: 10px solid #333; left: 0; }
-
+/* No need for .axis-x .arrow-right { border-left: 10px solid #333; right: 0; } if display: none */
+/* No need for .axis-x .arrow-left { border-right: 10px solid #333; left: 0; } if display: none */
 /* --- グリッド背景の修正 --- */
 .grid-container {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    /* 既存のグリッドラインを削除し、背景画像に置き換えます */
-    /* background-image: linear-gradient(to right, #eee 1px, transparent 1px), linear-gradient(to bottom, #eee 1px, transparent 1px); */
-    /* background-size: 50px 50px; */
-
-    /* ここを新しい画像と設定に置き換えます */
-    /* background-image: url('quadrant_background.png'); */ /* REMOVED or COMMENTED */
-    /* background-size: cover; */ /* REMOVED or COMMENTED */
-    /* background-position: center; */ /* REMOVED or COMMENTED */
-    /* background-repeat: no-repeat; */ /* REMOVED or COMMENTED */
-
+    background-image: url('quadrant_background.png'); /* Ensure this line is NOT commented out */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     overflow: hidden;
     z-index: 1;
 }
