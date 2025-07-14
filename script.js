@@ -21,14 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedIconPreview = document.getElementById('generatedIconPreview');
     const addGeneratedIconButton = document.getElementById('addGeneratedIconButton'); // AI生成アイコン追加ボタン
 
-    // プロジェクト保存・ロード関連の要素 (前回追加)
+    // プロジェクト保存・ロード関連の要素
     const saveProjectButton = document.getElementById('saveProjectButton');
     const archiveList = document.getElementById('archiveList');
     const noArchiveMessage = document.getElementById('noArchiveMessage');
 
+    // ★追加機能パネルの要素 (新規)
+    const quickSaveButton = document.getElementById('quickSaveButton');
+    const clearAllTasksButton = document.getElementById('clearAllTasksButton');
+
 
     // --- 状態変数 ---
     let activeItem = null; // 現在ドラッグ中のタスク要素
+    let draggedTask = null; // ドラッグ中のタスク要素 (onMouseMove, onMouseUp用)
     let xOffset = 0; // ドラッグ開始時のXオフセット
     let yOffset = 0; // ドラッグ開始時のYオフセット
     let tasks = []; // 現在のグリッド上のタスクデータを保持する配列
@@ -41,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragStartY = 0; // ドラッグ開始時のY座標
     let currentZIndex = 10; // アイコンの重なり順を管理
 
-    // タスクIDのユニーク性を保つためのカウンター (前回追加)
+    // タスクIDのユニーク性を保つためのカウンター
     let taskIdCounter = 0;
     const savedTaskIdCounter = localStorage.getItem('taskIdCounter');
     if (savedTaskIdCounter) {
@@ -182,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
-        // isDraggingOccurred はmouseup時にリセットされるため、draggedTask=null の後に実行されないよう注意
     };
 
 
@@ -460,19 +464,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- プロジェクト保存・ロード・アーカイブ機能 (前回追加分を調整) ---
+    // --- プロジェクト保存・ロード・アーカイブ機能 ---
 
     // 現在のプロジェクトの状態を取得する
     const getCurrentProjectState = () => {
         const currentTasks = [];
         document.querySelectorAll('.task-icon').forEach(taskIcon => {
-            // taskIcon.offsetLeftとtaskIcon.offsetTopは親要素に対する相対位置
             currentTasks.push({
                 id: taskIcon.dataset.id,
                 name: taskIcon.querySelector('span').textContent,
-                // Font AwesomeアイコンとAI生成画像の区別
-                iconHtml: taskIcon.querySelector('i') ? taskIcon.querySelector('i').className : null, // Font Awesomeの場合
-                generatedImageSrc: taskIcon.querySelector('img') ? taskIcon.querySelector('img').src : null, // AI生成画像の場合
+                iconHtml: taskIcon.querySelector('i') ? taskIcon.querySelector('i').className : null,
+                generatedImageSrc: taskIcon.querySelector('img') ? taskIcon.querySelector('img').src : null,
                 x: taskIcon.offsetLeft,
                 y: taskIcon.offsetTop
             });
@@ -494,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-            }); // 保存日時を日本形式で
+            });
             const projectData = {
                 name: projectName,
                 timestamp: timestamp,
@@ -510,46 +512,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // プロジェクトの状態をグリッドにロードする
     const loadProject = (projectState) => {
-        // 現在のグリッド上のタスクを全て削除
         gridContainer.innerHTML = '';
-        tasks = []; // tasks配列もクリア
-        currentZIndex = 10; // Z-indexをリセット
+        tasks = [];
+        currentZIndex = 10;
 
-        // ロードするプロジェクトのタスクを復元
         projectState.tasks.forEach(task => {
-            // Font AwesomeとAI画像を区別してタスクを作成
-            let iconHtmlOrSrc;
-            if (task.generatedImageSrc) {
-                iconHtmlOrSrc = task.generatedImageSrc;
-            } else if (task.iconHtml) {
-                // Font Awesomeアイコンクラスを直接渡す
-                iconHtmlOrSrc = `<i class="${task.iconHtml}"></i>`;
-            } else {
-                iconHtmlOrSrc = '<i class="fa-solid fa-circle"></i>'; // デフォルト
-            }
-
             const newTask = {
                 id: task.id,
                 name: task.name,
                 x: task.x,
                 y: task.y,
-                generatedImageSrc: task.generatedImageSrc // AI画像の場合はこれも復元
+                generatedImageSrc: task.generatedImageSrc
             };
             tasks.push(newTask);
             createTaskElement(newTask);
         });
 
-        // タスクIDカウンターも復元
         if (projectState.lastTaskId !== undefined) {
             taskIdCounter = projectState.lastTaskId;
-            saveTaskIdCounter(); // 復元したIDカウンターを保存
+            saveTaskIdCounter();
         }
         alert('プロジェクトがロードされました！');
+        saveTasks(); // ロードしたタスクを現在のタスクとして保存
     };
 
     // アーカイブリストをレンダリングする
     const renderArchiveList = () => {
-        archiveList.innerHTML = ''; // 一度クリア
+        archiveList.innerHTML = '';
         let projects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
 
         if (projects.length === 0) {
@@ -573,7 +562,6 @@ document.addEventListener('DOMContentLoaded', () => {
             archiveList.appendChild(archiveItem);
         });
 
-        // ロードボタンと削除ボタンにイベントリスナーを追加
         archiveList.querySelectorAll('.load-button').forEach(button => {
             button.addEventListener('click', (e) => {
                 const index = parseInt(e.target.dataset.index, 10);
@@ -581,8 +569,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (projectsToLoad[index]) {
                     if (confirm('現在のプロジェクトは保存されていません。ロードすると上書きされますがよろしいですか？')) {
                         loadProject(projectsToLoad[index].state);
-                        // ロード後、現在のタスクを保存し直す
-                        saveTasks();
                     }
                 }
             });
@@ -593,15 +579,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 const index = parseInt(e.target.dataset.index, 10);
                 if (confirm('このプロジェクトをアーカイブから削除しますか？')) {
                     let projectsToDelete = JSON.parse(localStorage.getItem('savedProjects') || '[]');
-                    projectsToDelete.splice(index, 1); // 該当するプロジェクトを削除
+                    projectsToDelete.splice(index, 1);
                     localStorage.setItem('savedProjects', JSON.stringify(projectsToDelete));
-                    renderArchiveList(); // リストを再レンダリング
+                    renderArchiveList();
                 }
             });
         });
     };
 
-    // --- イベントリスナーの追加 (既存のものと統合) ---
+    // --- 新しい追加機能のイベントリスナー (新規) ---
+    if (quickSaveButton) {
+        quickSaveButton.addEventListener('click', () => {
+            const projectName = `クイック保存 ${new Date().toLocaleString('ja-JP', {
+                year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })}`;
+            const projectState = getCurrentProjectState();
+            const projectData = {
+                name: projectName,
+                timestamp: new Date().toLocaleString('ja-JP', {
+                    year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }),
+                state: projectState
+            };
+            let projects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
+            projects.push(projectData);
+            localStorage.setItem('savedProjects', JSON.stringify(projects));
+            alert('現在の状態がクイック保存されました！');
+            renderArchiveList();
+        });
+    }
+
+    if (clearAllTasksButton) {
+        clearAllTasksButton.addEventListener('click', () => {
+            if (confirm('グリッド上のすべてのタスクを削除しますか？この操作は元に戻せません。')) {
+                gridContainer.innerHTML = ''; // DOMからすべてのタスクを削除
+                tasks = []; // tasks配列をクリア
+                saveTasks(); // LocalStorageを更新
+                alert('すべてのタスクが削除されました。');
+            }
+        });
+    }
+
+
+    // --- イベントリスナーの追加 ---
     addTaskButton.addEventListener('click', addNewTask);
     newTaskNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -612,7 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeButton) closeButton.addEventListener('click', hideTaskDetail);
     if (cancelTaskButton) cancelTaskButton.addEventListener('click', hideTaskDetail);
     if (saveTaskButton) saveTaskButton.addEventListener('click', saveEditedTask);
-    if (deleteTaskButton) deleteTaskButton.addEventListener('click', deleteTask); // 確認メッセージを関数内で処理
+    if (deleteTaskButton) deleteTaskButton.addEventListener('click', deleteTask);
 
     if (taskDetailModal) {
         taskDetailModal.addEventListener('click', (e) => {
