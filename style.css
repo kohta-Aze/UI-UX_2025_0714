@@ -75,8 +75,9 @@ body {
     width: 2px; background-color: #333; z-index: 5;
 }
 .axis-y .axis-icon {
-    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-    font-size: 2em; color: #555;
+    display: none; /* Add this line */
+    /* position: absolute; top: 10px; left: 50%; transform: translateX(-50%); */
+    /* font-size: 2em; color: #555; */
 }
 .axis-y .arrow-up, .axis-y .arrow-down {
     width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
@@ -90,8 +91,9 @@ body {
     height: 2px; background-color: #333; z-index: 5;
 }
 .axis-x .axis-icon {
-    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-    font-size: 2em; color: #555;
+    display: none; /* Add this line */
+    /* position: absolute; right: 10px; top: 50%; transform: translateY(-50%); */
+    /* font-size: 2em; color: #555; */
 }
 .axis-x .arrow-right, .axis-x .arrow-left {
     width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
@@ -108,10 +110,10 @@ body {
     /* background-size: 50px 50px; */
 
     /* ここを新しい画像と設定に置き換えます */
-    background-image: url('quadrant_background.png'); /* ここに作成した画像ファイルのパスを指定 */
-    background-size: cover; /* グリッド全体を覆うように画像を拡大縮小 */
-    background-position: center; /* 画像を中央に配置 */
-    background-repeat: no-repeat; /* 画像を繰り返さない */
+    /* background-image: url('quadrant_background.png'); */ /* REMOVED or COMMENTED */
+    /* background-size: cover; */ /* REMOVED or COMMENTED */
+    /* background-position: center; */ /* REMOVED or COMMENTED */
+    /* background-repeat: no-repeat; */ /* REMOVED or COMMENTED */
 
     overflow: hidden;
     z-index: 1;
