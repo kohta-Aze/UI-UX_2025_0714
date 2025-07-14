@@ -4,25 +4,25 @@ body {
     font-family: sans-serif;
     background-color: #f0f0f0;
     display: flex;
-    flex-direction: column; /* ★ 縦方向に要素を並べるように変更 */
-    justify-content: center; /* 水平中央寄せ */
-    align-items: center; /* 中央に寄せる */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     padding: 20px;
     box-sizing: border-box;
-    overflow-y: auto; /* 縦スクロールを許可 */
+    overflow-y: auto;
 }
 
 /* メインコンテンツを囲むラッパー */
 .main-content-wrapper {
     display: flex;
-    flex-direction: row; /* ★ column から row に変更（PCで横並びにするため） */
+    flex-direction: row;
     align-items: flex-start;
     justify-content: center;
-    gap: 30px; /* ★ 地図と操作パネルの間のスペース */
+    gap: 30px; /* 地図と操作パネルの間のスペース */
     width: 100%;
-    max-width: 1400px; /* ★ 横並びのため最大幅を広げる */
-    margin-bottom: 40px; /* アーカイブセクションとの間にスペースを追加 */
+    max-width: 1400px;
+    /* margin-bottom: 40px; ★不要になるため削除 */
 }
 
 /* --- メインのグリッドコンテナ (.container) --- */
@@ -35,7 +35,7 @@ body {
     border: 1px solid #ccc;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 0; /* ★ 横並びになるため不要 */
+    margin-bottom: 0;
     flex-shrink: 0;
 }
 /* --- 軸のスタイル (変更なし) --- */
@@ -92,13 +92,22 @@ body {
 .task-icon.dragging { cursor: grabbing; z-index: 1000; }
 .task-icon.dragging-just-finished { pointer-events: none; }
 
-/* --- 下部パネルのレイアウト (新規または大幅変更) --- */
+/* ★右側パネル全体のラッパー (新規) */
+.right-panel-wrapper {
+    display: flex;
+    flex-direction: column; /* 縦方向に要素を並べる */
+    gap: 30px; /* パネル間のスペース */
+    width: 400px; /* 右側パネル全体の幅 */
+    flex-shrink: 0;
+}
+
+/* --- 下部パネルのレイアウト (調整) --- */
 .bottom-panel {
     display: flex;
-    flex-direction: column; /* ★ 横並びだったのを縦積みに変更 */
+    flex-direction: column; /* 縦積みに変更（以前の bottom-panel の内容） */
     align-items: center;
     gap: 20px;
-    width: 380px; /* ★ 右側パネル全体の幅を指定 */
+    width: 100%; /* 親要素の幅いっぱいに */
     flex-shrink: 0;
 }
 
@@ -107,15 +116,15 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    width: 100%; /* ★ 親要素(.bottom-panel)の幅に合わせる */
+    width: 100%;
 }
 
-/* ★AI画像生成機能と追加機能パネルを横並びにするラッパー (新規) */
+/* AI画像生成機能と追加機能パネルを横並びにするラッパー */
 .ai-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
     gap: 20px;
-    width: 100%; /* 親要素の幅いっぱいに */
+    width: 100%;
     justify-content: center; /* 中央寄せ */
     align-items: flex-start; /* 上揃え */
 }
@@ -126,29 +135,28 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%; /* ★変更：ai-section-wrapperの残り幅に合わせる */
-    /* max-width: 100%; <-削除 */
+    width: 100%; /* ai-section-wrapperの残り幅に合わせる */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     flex-shrink: 0;
-    flex-grow: 1; /* ★追加：ai-section-wrapper内でスペースを埋める */
+    flex-grow: 1; /* ai-section-wrapper内でスペースを埋める */
 }
 
-/* ★追加機能パネル (新規) */
+/* 追加機能パネル */
 .additional-features-panel {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%; /* ★変更：ai-section-wrapperの残り幅に合わせる */
+    width: 100%; /* ai-section-wrapperの残り幅に合わせる */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     flex-shrink: 0;
-    flex-grow: 1; /* ★追加：ai-section-wrapper内でスペースを埋める */
+    flex-grow: 1; /* ai-section-wrapper内でスペースを埋める */
     text-align: center;
 }
 
@@ -181,7 +189,7 @@ body {
 }
 
 
-/* --- テキスト入力フォーム (調整) --- */
+/* --- テキスト入力フォーム (調整なし) --- */
 .add-task-form {
     display: flex;
     justify-content: center;
@@ -191,7 +199,7 @@ body {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    width: 100%; /* 親要素の幅いっぱいに */
+    width: 100%;
     box-sizing: border-box;
 }
 .add-task-form input[type="text"] {
@@ -205,13 +213,13 @@ body {
 }
 .add-task-form button:hover { background-color: #218838; }
 
-/* --- ドラッグ可能なアイコンパレット (調整) --- */
+/* --- ドラッグ可能なアイコンパレット (調整なし) --- */
 .draggable-icons-container {
     padding: 20px;
     background-color: #f0f0f0;
     border-radius: 10px;
     text-align: center;
-    width: 100%; /* 親要素の幅いっぱいに */
+    width: 100%;
     box-sizing: border-box;
 }
 .draggable-icons-container h3 { margin-top: 0; margin-bottom: 20px; color: #333; }
@@ -236,47 +244,7 @@ body {
 }
 
 
-/* --- AI画像生成機能 (調整) --- */
-/* ai-image-generator の幅設定は ai-section-wrapper の中で flex-grow: 1 で調整されるため、
-   ここでの width: 350px は削除またはコメントアウトします。
-   代わりに、flex-basis (初期サイズ) を設定することもできますが、flex-growだけでも機能します。
-*/
-/* .ai-image-generator {
-    width: 350px;
-} */
-
-
-.ai-image-generator h3 {
-    margin-top: 0;
-    color: #333;
-    font-size: 1.3em;
-}
-
-.ai-image-generator input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-.ai-image-generator button {
-    padding: 10px 15px;
-    background-color: #6c5ce7; /* 紫色 */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease-in-out;
-    width: 100%;
-}
-
-.ai-image-generator button:hover {
-    background-color: #4a3eb3;
-}
-
+/* AI画像生成機能のプレビュー */
 .generated-icon-preview {
     width: 120px;
     height: 120px;
@@ -334,10 +302,10 @@ body {
 }
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
 
-/* プロジェクト保存ボタンのスタイル */
+/* プロジェクト保存ボタンのスタイル (位置調整) */
 .save-project-button {
     padding: 12px 25px;
-    background-color: #20c997; /* Teal color */
+    background-color: #20c997;
     color: white;
     border: none;
     border-radius: 8px;
@@ -354,16 +322,17 @@ body {
     transform: translateY(-2px);
 }
 
-/* アーカイブセクションのスタイル */
+/* ★アーカイブセクションのスタイル (調整) */
 .archive-section {
     width: 100%;
-    max-width: 1400px;
+    /* max-width: 1400px; ★不要になるため削除 */
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 30px;
-    margin-top: 20px; /* メインコンテンツとの間のマージン */
+    /* margin-top: 20px; ★不要になるため削除 */
     box-sizing: border-box;
+    flex-shrink: 0; /* 縮まないように */
 }
 
 .archive-section h2 {
@@ -377,7 +346,7 @@ body {
 
 .archive-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 適切なサイズで折り返すグリッド */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* 適切なサイズで折り返すグリッド */
     gap: 20px;
 }
 
@@ -454,7 +423,7 @@ body {
     .main-content-wrapper {
         flex-direction: column; /* スマホでは縦積みに戻す */
         gap: 0;
-        margin-bottom: 20px; /* スマホでのアーカイブセクションとのスペース調整 */
+        /* margin-bottom: 20px; ★削除 */
     }
 
     .container {
@@ -465,64 +434,59 @@ body {
         margin-bottom: 20px; /* 下のパネルとのスペースを復活 */
     }
 
+    /* ★right-panel-wrapper もスマホでは縦積みに */
+    .right-panel-wrapper {
+        width: 100%;
+        gap: 20px; /* パネル間のスペース */
+    }
+
     .bottom-panel {
         width: 100%;
-        /* flex-direction を row に変更し、子要素を横並びにする */
-        flex-direction: row; /* ★スマホでの bottom-panel を横並びにする */
-        flex-wrap: wrap; /* 収まらない場合は折り返す */
-        justify-content: center; /* 中央寄せ */
-        gap: 15px; /* 子要素間のギャップ */
+        flex-direction: column; /* スマホでは縦積みに戻す */
+        gap: 20px;
     }
 
     .left-section,
-    .additional-features-panel, /* ★追加 */
-    .ai-image-generator {
-        width: calc(50% - 10px); /* 2列表示にするための計算 */
+    .additional-features-panel,
+    .ai-image-generator,
+    .archive-section { /* ★追加 */
+        width: 100%; /* スマホでは各セクションが横幅いっぱいに */
         max-width: 100%;
         box-sizing: border-box;
     }
 
-    /* 各セクションの幅を調整（特に左側） */
-    .left-section {
-        order: 1; /* スマホでの表示順 */
-    }
-    .additional-features-panel {
-        order: 3; /* AI画像生成の下に配置 */
-    }
-    .ai-image-generator {
-        order: 2; /* スマホでの表示順 */
-    }
-
     /* AIセクションラッパーはスマホでは不要になるため、display: contentsなどで無視 */
     .ai-section-wrapper {
-        display: contents; /* 子要素が直接 bottom-panel の flex アイテムになるように */
+        flex-direction: column; /* スマホではAIと追加機能も縦積みに */
+        gap: 20px;
     }
 
-    /* --- タスク追加フォームのレイアウトを調整 --- */
+    /* --- タスク追加フォームのレイアウトを調整 (変更なし) --- */
     .add-task-form {
-        flex-direction: column; /* 入力欄とボタンを縦に並べる */
-        align-items: stretch;    /* 幅を親要素に合わせる */
+        flex-direction: column;
+        align-items: stretch;
     }
     .add-task-form input[type="text"],
     .add-task-form button {
-        width: 100%; /* 幅を100%に */
+        width: 100%;
     }
 
-    /* --- タスク詳細モーダルの調整 --- */
+    /* --- タスク詳細モーダルの調整 (変更なし) --- */
     .task-detail-content {
-        width: 90vw; /* 画面幅の90%に設定 */
+        width: 90vw;
     }
     .task-detail-content .buttons {
-        flex-direction: column; /* ボタンを縦に並べる */
+        flex-direction: column;
         gap: 15px;
     }
     .task-detail-content button {
         width: 100%;
     }
 
-    /* アーカイブセクションのスマホ対応 */
+    /* アーカイブセクションのスマホ対応 (調整) */
     .archive-section {
         padding: 20px 15px;
+        /* margin-bottom: 20px; ★削除 */
     }
 
     .archive-list {
