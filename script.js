@@ -1,13 +1,12 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM要素の取得 ---
+    const container = document.querySelector('.container'); // ★追加: ドラッグ時の座標計算に必要
     const gridContainer = document.querySelector('.grid-container');
     const newTaskNameInput = document.getElementById('newTaskName');
     const addTaskButton = document.getElementById('addTaskButton');
 
     const taskDetailModal = document.getElementById('taskDetailModal');
-    const closeButton = document.querySelector('.close-button');
+    const closeButton = taskDetailModal.querySelector('.close-button'); // 親要素から取得するよう修正
     const detailTaskNameInput = document.getElementById('detailTaskName');
     const saveTaskButton = document.getElementById('saveTaskButton');
     const deleteTaskButton = document.getElementById('deleteTaskButton');
@@ -22,22 +21,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedIconPreview = document.getElementById('generatedIconPreview');
     const addGeneratedIconButton = document.getElementById('addGeneratedIconButton'); // AI生成アイコン追加ボタン
 
-    // script.js (DOMContentLoadedイベントリスナーの中)
-// ... 既存のコード ...
+    // プロジェクト保存・ロード関連の要素 (前回追加)
+    const saveProjectButton = document.getElementById('saveProjectButton');
+    const archiveList = document.getElementById('archiveList');
+    const noArchiveMessage = document.getElementById('noArchiveMessage');
 
-// --- 状態変数 ---
-let activeItem = null;
-let xOffset = 0;
-let yOffset = 0;
-let tasks = [];
-let editingTaskId = null;
-let draggedTaskName = null;
-let draggedGeneratedImageSrc = null;
-let isDraggingOccurred = false; // ★追加：ドラッグが発生したか
-let dragStartX = 0; // ★追加：ドラッグ開始時のX座標
-let dragStartY = 0; // ★追加：ドラッグ開始時のY座標
 
-// ... 既存のコード ...
+    // --- 状態変数 ---
+    let activeItem = null; // 現在ドラッグ中のタスク要素
+    let xOffset = 0; // ドラッグ開始時のXオフセット
+    let yOffset = 0; // ドラッグ開始時のYオフセット
+    let tasks = []; // 現在のグリッド上のタスクデータを保持する配列
+    let editingTaskId = null; // 詳細モーダルで編集中のタスクID
+    let draggedTaskName = null; // パレットからドラッグされたタスク名
+    let draggedGeneratedImageSrc = null; // AI生成アイコンの画像URL
+
+    let isDraggingOccurred = false; // ドラッグが発生したか（クリックと区別するため）
+    let dragStartX = 0; // ドラッグ開始時のX座標
+    let dragStartY = 0; // ドラッグ開始時のY座標
+    let currentZIndex = 10; // アイコンの重なり順を管理
+
+    // タスクIDのユニーク性を保つためのカウンター (前回追加)
+    let taskIdCounter = 0;
+    const savedTaskIdCounter = localStorage.getItem('taskIdCounter');
+    if (savedTaskIdCounter) {
+        taskIdCounter = parseInt(savedTaskIdCounter, 10);
+    }
+    const saveTaskIdCounter = () => {
+        localStorage.setItem('taskIdCounter', taskIdCounter.toString());
+    };
 
     // --- ヘルパー関数: タスク名からアイコンクラスを決定 ---
     function getTaskIconClass(taskName) {
@@ -59,90 +71,120 @@ let dragStartY = 0; // ★追加：ドラッグ開始時のY座標
     }
 
     // --- データ保存・読み込み関連 ---
-    function loadTasks() {
-        const storedTasks = localStorage.getItem('twoD_todo_tasks');
-        if (storedTasks) {
-            tasks = JSON.parse(storedTasks);
-            tasks.forEach(task => createTaskElement(task));
-        } else {
-            // デフォルトのタスクを画像に合わせて調整
-            tasks = [
-                { id: 'task-mail', name: 'メール', x: 200, y: 150 },
-                { id: 'task-friend', name: '友達', x: 200, y: 400 },
-                { id: 'task-book', name: '本', x: 600, y: 400 },
-                { id: 'task-music', name: '音楽', x: 600, y: 150 }
-            ];
-            saveTasks();
-            tasks.forEach(task => createTaskElement(task));
-        }
-    }
-
+    // 現在のプロジェクトのタスクをlocalStorageに保存する関数
     function saveTasks() {
         localStorage.setItem('twoD_todo_tasks', JSON.stringify(tasks));
     }
 
-    // --- タスクアイコンのDOM操作関連 ---
-    // script.js
-// ... 既存のコード ...
+    // グリッドにタスク要素を生成・追加する関数
+    function createTaskElement(task) {
+        const taskDiv = document.createElement('div');
+        taskDiv.classList.add('task-icon');
+        taskDiv.setAttribute('data-id', task.id);
+        taskDiv.style.left = `${task.x}px`;
+        taskDiv.style.top = `${task.y}px`;
+        taskDiv.style.zIndex = currentZIndex++; // 重なり順を設定
 
-    // script.js
-// ... (中略) ...
-
-function createTaskElement(task) {
-    console.log('createTaskElement called for task:', task.id, task.name); // ★追加
-
-    const taskDiv = document.createElement('div');
-    taskDiv.classList.add('task-icon');
-    taskDiv.setAttribute('data-id', task.id);
-    taskDiv.style.left = `${task.x}px`;
-    taskDiv.style.top = `${task.y}px`;
-
-    // 以前の指示でコメントアウトまたは削除をお願いした is-dragging クラスの追加行が
-    // もし残っていたら、必ず削除してください。
-    // taskDiv.classList.add('is-dragging'); // この行は新しいタスク作成時には不要です！
-
-    if (task.generatedImageSrc) {
-        console.log('Adding generated image:', task.generatedImageSrc); // ★追加
-        const imgElement = document.createElement('img');
-        imgElement.src = task.generatedImageSrc;
-        imgElement.alt = task.name;
-        taskDiv.appendChild(imgElement);
-    } else {
-        console.log('Adding Font Awesome icon for:', task.name); // ★追加
-        const iconElement = document.createElement('i');
-        const iconClasses = getTaskIconClass(task.name).split(' ');
-        iconClasses.forEach(className => {
-            if (className) {
-                iconElement.classList.add(className);
-            }
-        });
-        taskDiv.appendChild(iconElement);
-    }
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = task.name;
-    taskDiv.appendChild(nameSpan);
-
-    console.log('Task element created:', taskDiv); // ★追加
-
-    // クリックで詳細を表示するイベント
-    taskDiv.addEventListener('click', (e) => {
-        if (!isDraggingOccurred) {
-            showTaskDetail(task.id);
+        if (task.generatedImageSrc) {
+            const imgElement = document.createElement('img');
+            imgElement.src = task.generatedImageSrc;
+            imgElement.alt = task.name;
+            taskDiv.appendChild(imgElement);
+        } else {
+            const iconElement = document.createElement('i');
+            const iconClasses = getTaskIconClass(task.name).split(' ');
+            iconClasses.forEach(className => {
+                if (className) {
+                    iconElement.classList.add(className);
+                }
+            });
+            taskDiv.appendChild(iconElement);
         }
-        isDraggingOccurred = false;
-    });
 
-    try {
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = task.name;
+        taskDiv.appendChild(nameSpan);
+
+        // タスクアイコンのドラッグ開始イベント
+        taskDiv.addEventListener('mousedown', (e) => {
+            // モーダルが開いている場合はドラッグしない
+            if (taskDetailModal.style.display === 'flex') {
+                return;
+            }
+            draggedTask = taskDiv; // activeItemの代わりにdraggedTaskを使用
+            draggedTask.classList.add('dragging');
+            draggedTask.style.zIndex = currentZIndex++;
+
+            const rect = draggedTask.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect(); // .containerの座標
+            xOffset = e.clientX - rect.left;
+            yOffset = e.clientY - rect.top;
+
+            isDraggingOccurred = false;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        // クリックで詳細を表示するイベント (ドラッグと区別)
+        taskDiv.addEventListener('mouseup', (e) => {
+            // 短いクリック（ドラッグではない）の場合にモーダルを表示
+            const dragThreshold = 5; // 例えば5ピクセル以内ならクリックと判定
+            if (Math.abs(e.clientX - dragStartX) < dragThreshold && Math.abs(e.clientY - dragStartY) < dragThreshold && !isDraggingOccurred) {
+                showTaskDetail(task.id);
+            }
+            isDraggingOccurred = false; // リセット
+        });
+
         gridContainer.appendChild(taskDiv);
-        console.log('Task element appended to gridContainer.'); // ★追加
-    } catch (error) {
-        console.error('Error appending taskDiv to gridContainer:', error); // ★追加
     }
-}
 
-// ... (中略) ...
-// ... 既存のコード ...
+    // ドラッグ中のマウス移動処理
+    const onMouseMove = (e) => {
+        if (!draggedTask) return;
+        e.preventDefault();
+
+        const containerRect = container.getBoundingClientRect();
+        const draggedRect = draggedTask.getBoundingClientRect();
+
+        let newLeft = e.clientX - containerRect.left - xOffset;
+        let newTop = e.clientY - containerRect.top - yOffset;
+
+        // コンテナの境界内に制限
+        newLeft = Math.max(0, Math.min(newLeft, containerRect.width - draggedRect.width));
+        newTop = Math.max(0, Math.min(newTop, containerRect.height - draggedRect.height));
+
+        draggedTask.style.left = `${newLeft}px`;
+        draggedTask.style.top = `${newTop}px`;
+
+        const dragThreshold = 5;
+        if (Math.abs(e.clientX - dragStartX) > dragThreshold || Math.abs(e.clientY - dragStartY) > dragThreshold) {
+            isDraggingOccurred = true;
+        }
+    };
+
+    // ドラッグ終了時の処理
+    const onMouseUp = () => {
+        if (draggedTask) {
+            draggedTask.classList.remove('dragging');
+
+            const taskId = draggedTask.getAttribute('data-id');
+            const taskIndex = tasks.findIndex(task => task.id === taskId);
+
+            if (taskIndex !== -1) {
+                tasks[taskIndex].x = draggedTask.offsetLeft;
+                tasks[taskIndex].y = draggedTask.offsetTop;
+                saveTasks();
+            }
+            draggedTask = null; // draggedTaskをnullにリセット
+        }
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        // isDraggingOccurred はmouseup時にリセットされるため、draggedTask=null の後に実行されないよう注意
+    };
+
 
     // --- 新しいタスクの追加 (テキスト入力用) ---
     function addNewTask() {
@@ -152,17 +194,19 @@ function createTaskElement(task) {
             return;
         }
 
-        const newId = `task-${Date.now()}`;
+        const newId = `task-${taskIdCounter++}`; // ユニークIDを生成
         const newTask = {
             id: newId,
             name: taskName,
             x: 50,
-            y: 50
+            y: 50,
+            generatedImageSrc: null // 通常タスクなのでnull
         };
 
         tasks.push(newTask);
         createTaskElement(newTask);
         saveTasks();
+        saveTaskIdCounter(); // IDカウンターを保存
         newTaskNameInput.value = '';
     }
 
@@ -195,8 +239,10 @@ function createTaskElement(task) {
             const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
             if (taskElement) {
                 // 既存のアイコンや画像を削除
-                while (taskElement.firstChild) {
-                    taskElement.removeChild(taskElement.firstChild);
+                // nameSpan以外の要素（iタグやimgタグ）を削除
+                const oldIconOrImage = taskElement.querySelector('i, img');
+                if (oldIconOrImage) {
+                    taskElement.removeChild(oldIconOrImage);
                 }
 
                 // AI生成画像がある場合は画像を、そうでない場合はFont Awesomeアイコンを再生成
@@ -204,7 +250,7 @@ function createTaskElement(task) {
                     const imgElement = document.createElement('img');
                     imgElement.src = task.generatedImageSrc;
                     imgElement.alt = newName;
-                    taskElement.appendChild(imgElement);
+                    taskElement.prepend(imgElement); // 先頭に追加
                 } else {
                     const iconElement = document.createElement('i');
                     const iconClasses = getTaskIconClass(newName).split(' ');
@@ -213,12 +259,14 @@ function createTaskElement(task) {
                             iconElement.classList.add(className);
                         }
                     });
-                    taskElement.appendChild(iconElement);
+                    taskElement.prepend(iconElement); // 先頭に追加
                 }
 
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = newName;
-                taskElement.appendChild(nameSpan);
+                // nameSpanのテキストを更新
+                const nameSpan = taskElement.querySelector('span');
+                if (nameSpan) {
+                    nameSpan.textContent = newName;
+                }
             }
             saveTasks();
             hideTaskDetail();
@@ -226,153 +274,42 @@ function createTaskElement(task) {
     }
 
     // --- タスクの削除 ---
-   function deleteTask() {
-    // 確認メッセージなしで即時削除
-    tasks = tasks.filter(t => t.id !== editingTaskId);
-    const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
-    if (taskElement) {
-        taskElement.remove();
-    }
-    saveTasks();
-    hideTaskDetail();
-}
-
-    // --- ドラッグ＆ドロップ関連の関数 (既存タスクの移動用) ---
-    gridContainer.addEventListener('mouseup', dragEnd);
-    gridContainer.addEventListener('touchend', dragEnd);
-    gridContainer.addEventListener('mousemove', drag);
-    gridContainer.addEventListener('touchmove', drag);
-    gridContainer.addEventListener('mousedown', dragStart);
-    gridContainer.addEventListener('touchstart', dragStart, { passive: false });
-
-    // script.js
-
-function dragStart(e) {
-    if (taskDetailModal.style.display === 'flex') {
-        activeItem = null;
-        return;
-    }
-
-    let targetElement = e.target;
-    while (targetElement && !targetElement.classList.contains("task-icon") && targetElement !== gridContainer) {
-        targetElement = targetElement.parentElement;
-    }
-
-    if (targetElement && targetElement.classList.contains("task-icon")) {
-        activeItem = targetElement;
-        activeItem.classList.add('dragging');
-
-        const clientX = e.clientX || e.touches[0].clientX;
-        const clientY = e.clientY || e.touches[0].clientY;
-
-        const itemLeft = activeItem.offsetLeft;
-        const itemTop = activeItem.offsetTop;
-
-        xOffset = clientX - (gridContainer.getBoundingClientRect().left + itemLeft);
-        yOffset = clientY - (gridContainer.getBoundingClientRect().top + itemTop);
-
-        isDraggingOccurred = false;
-        dragStartX = clientX;
-        dragStartY = clientY;
-
-        // ★★★ この行を削除してください ★★★
-        // e.dataTransfer.effectAllowed = "move"; 
-    }
-}
-   // script.js
-// ... 既存のコード ...
-
-function dragEnd(e) {
-    if (activeItem) {
-        activeItem.classList.remove('dragging');
-        // activeItem.classList.add('dragging-just-finished'); // ★ここを削除またはコメントアウト
-        // setTimeout(() => { // ★ここを削除またはコメントアウト
-        //     if (activeItem) { // ★ここを削除またはコメントアウト
-        //         activeItem.classList.remove('dragging-just-finished'); // ★ここを削除またはコメントアウト
-        //     } // ★ここを削除またはコメントアウト
-        // }, 100); // ★ここを削除またはコメントアウト
-
-        const taskId = activeItem.getAttribute('data-id');
-        const taskIndex = tasks.findIndex(task => task.id === taskId);
-
-        if (taskIndex !== -1) {
-            tasks[taskIndex].x = activeItem.offsetLeft;
-            tasks[taskIndex].y = activeItem.offsetTop;
+    function deleteTask() {
+        if (confirm('このタスクを削除しますか？')) { // 確認メッセージを追加
+            tasks = tasks.filter(t => t.id !== editingTaskId);
+            const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
+            if (taskElement) {
+                taskElement.remove();
+            }
             saveTasks();
-        }
-        activeItem = null; // ★activeItemをnullにリセット
-        xOffset = 0;
-        yOffset = 0;
-        // isDraggingOccurred は次の dragStart でリセットされる
-    }
-}
-
-// ... 既存のコード ...
-    // script.js
-// ... 既存のコード ...
-
-function drag(e) {
-    if (activeItem) {
-        e.preventDefault();
-
-        const containerRect = gridContainer.getBoundingClientRect();
-        const itemRect = activeItem.getBoundingClientRect();
-
-        let clientX = e.clientX;
-        let clientY = e.clientY;
-
-        if (e.type === "touchmove") {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        }
-
-        let newLeft = clientX - containerRect.left - xOffset;
-        let newTop = clientY - containerRect.top - yOffset;
-
-        newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemRect.width));
-        newTop = Math.max(0, Math.min(newTop, containerRect.height - itemRect.height));
-
-        activeItem.style.left = `${newLeft}px`;
-        activeItem.style.top = `${newTop}px`;
-
-        // ★追加：ドラッグがあったと判定するしきい値
-        const dragThreshold = 5; // 例えば5ピクセル以上移動したらドラッグと判定
-        if (Math.abs(clientX - dragStartX) > dragThreshold || Math.abs(clientY - dragStartY) > dragThreshold) {
-            isDraggingOccurred = true;
+            hideTaskDetail();
         }
     }
-}
 
-// ... 既存のコード ...
     // --- 新しいアイコンのドラッグ＆ドロップ処理 (アイコンパレット用) ---
-    // ... 既存のコード ...
+    draggableIcons.forEach(icon => {
+        icon.setAttribute('draggable', 'true');
 
-// --- 新しいアイコンのドラッグ＆ドロップ処理 (アイコンパレット用) ---
-draggableIcons.forEach(icon => {
-    icon.setAttribute('draggable', 'true');
+        icon.addEventListener('dragstart', (e) => {
+            if (taskDetailModal.style.display === 'flex') {
+                e.preventDefault();
+                return;
+            }
+            draggedTaskName = icon.getAttribute('data-task-name');
+            draggedGeneratedImageSrc = null; // 通常アイコンなのでnull
+            e.dataTransfer.setData('text/plain', draggedTaskName);
+            e.dataTransfer.effectAllowed = "copy";
+            e.currentTarget.classList.add('is-dragging');
+        });
 
-    icon.addEventListener('dragstart', (e) => {
-        if (taskDetailModal.style.display === 'flex') {
-            e.preventDefault();
-            return;
-        }
-        draggedTaskName = icon.getAttribute('data-task-name');
-        draggedGeneratedImageSrc = null;
-        e.dataTransfer.setData('text/plain', draggedTaskName);
-        // ★★★ この行を追加/修正 ★★★
-        e.dataTransfer.effectAllowed = "copy"; // パレットからのドラッグはコピーなので "copy"
-        e.currentTarget.classList.add('is-dragging');
+        icon.addEventListener('dragend', (e) => {
+            e.currentTarget.classList.remove('is-dragging');
+            draggedTaskName = null;
+        });
     });
 
-    icon.addEventListener('dragend', (e) => {
-        e.currentTarget.classList.remove('is-dragging');
-        draggedTaskName = null;
-    });
-});
-
-// ... 既存のコード ...
-
-    if (addGeneratedIconButton) { // 要素が存在するか確認
+    // --- AI生成アイコンのドラッグ＆ドロップ処理 ---
+    if (addGeneratedIconButton) {
         addGeneratedIconButton.setAttribute('draggable', 'true');
         addGeneratedIconButton.addEventListener('dragstart', (e) => {
             if (taskDetailModal.style.display === 'flex') {
@@ -380,109 +317,85 @@ draggableIcons.forEach(icon => {
                 return;
             }
             draggedTaskName = e.currentTarget.getAttribute('data-generated-task-name');
-            // AI生成画像URLもデータ転送に含める
             const imgElement = generatedIconPreview.querySelector('img');
             draggedGeneratedImageSrc = imgElement ? imgElement.src : null;
 
             e.dataTransfer.setData('text/plain', draggedTaskName);
-            // 生成画像URLも別の形式で転送（必要に応じて）
             if (draggedGeneratedImageSrc) {
-                e.dataTransfer.setData('image/x-generated-icon', draggedGeneratedImageSrc);
+                e.dataTransfer.setData('image/x-generated-icon', draggedGeneratedImageSrc); // カスタムMIMEタイプ
             }
+            e.dataTransfer.effectAllowed = "copy";
             e.currentTarget.classList.add('is-dragging');
         });
 
         addGeneratedIconButton.addEventListener('dragend', (e) => {
             e.currentTarget.classList.remove('is-dragging');
             draggedTaskName = null;
-            draggedGeneratedImageSrc = null; // リセット
+            draggedGeneratedImageSrc = null;
         });
     }
 
+    // --- grid-containerへのドロップ処理 ---
+    gridContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+    });
 
-    // ... 既存のコード ...
+    gridContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // 親要素へのイベント伝播を停止
 
-// --- grid-containerへのドロップ処理 ---
-gridContainer.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    // ★★★ この行を修正 ★★★
-    e.dataTransfer.dropEffect = 'copy'; // パレットやAI生成アイコンからのドロップはコピー
-});
+        // draggedTaskName が存在するか、または draggedGeneratedImageSrc が存在するか
+        if (draggedTaskName || draggedGeneratedImageSrc) {
+            const newTaskId = `task-${taskIdCounter++}`; // ユニークIDを生成
 
+            const gridRect = gridContainer.getBoundingClientRect();
+            const dropX = e.clientX - gridRect.left;
+            const dropY = e.clientY - gridRect.top;
 
-gridContainer.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation(); 
-    
-    console.log('Drop event fired.');
-    console.log('draggedTaskName:', draggedTaskName);
-    console.log('draggedGeneratedImageSrc:', draggedGeneratedImageSrc);
+            const iconWidth = 90;
+            const iconHeight = 90;
+            let newX = dropX - (iconWidth / 2);
+            let newY = dropY - (iconHeight / 2);
 
-    if (draggedTaskName) {
-        const newTaskId = `task-${Date.now()}`;
+            // グリッドコンテナの範囲内に収まるように調整
+            const boundedX = Math.max(0, Math.min(newX, gridRect.width - iconWidth));
+            const boundedY = Math.max(0, Math.min(newY, gridRect.height - iconHeight));
 
-        const gridRect = gridContainer.getBoundingClientRect();
-        const dropX = e.clientX - gridRect.left;
-        const dropY = e.clientY - gridRect.top;
+            const newTask = {
+                id: newTaskId,
+                name: draggedTaskName,
+                x: boundedX,
+                y: boundedY,
+                generatedImageSrc: draggedGeneratedImageSrc
+            };
 
-        const iconWidth = 90;
-        const iconHeight = 90;
-        let newX = dropX - (iconWidth / 2);
-        let newY = dropY - (iconHeight / 2);
+            tasks.push(newTask);
+            createTaskElement(newTask);
+            saveTasks();
+            saveTaskIdCounter(); // IDカウンターを保存
 
-        // ★★★ ここにログを追加 ★★★
-        console.log(`Calculated initial newX: ${newX}, newY: ${newY}`);
+            // AI生成アイコンからのドロップの場合、プレビューをリセット
+            if (addGeneratedIconButton && addGeneratedIconButton.style.display !== 'none') {
+                generatedIconPreview.innerHTML = `
+                    <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
+                    <p>ここに生成されたアイコンが表示されます</p>
+                `;
+                addGeneratedIconButton.style.display = 'none';
+                if (aiPromptInput) aiPromptInput.value = '';
+            }
 
-        // グリッドコンテナの範囲内に収まるように調整
-        const boundedX = Math.max(0, Math.min(newX, gridRect.width - iconWidth));
-        const boundedY = Math.max(0, Math.min(newY, gridRect.height - iconHeight));
+            // ドロップ後の状態変数リセット
+            draggedTaskName = null;
+            draggedGeneratedImageSrc = null;
 
-        // ★★★ ここにもログを追加 ★★★
-        console.log(`Bounded X: ${boundedX}, Bounded Y: ${boundedY}`);
-
-
-        const newTask = {
-            id: newTaskId,
-            name: draggedTaskName,
-            x: boundedX, // 調整後の座標を使用
-            y: boundedY, // 調整後の座標を使用
-            generatedImageSrc: draggedGeneratedImageSrc
-        };
-
-        tasks.push(newTask);
-        createTaskElement(newTask);
-        saveTasks();
-
-        // ★★★ 新しく追加された要素が実際にDOMにあるか確認するログ ★★★
-        const addedElement = document.querySelector(`.task-icon[data-id="${newTaskId}"]`);
-        if (addedElement) {
-            console.log('Task element successfully added to DOM at:', addedElement.style.left, addedElement.style.top);
         } else {
-            console.error('Failed to add task element to DOM.');
+            console.warn('ドラッグされたアイテムが不明です。ドロップがキャンセルされました。');
         }
-
-
-        draggedTaskName = null;
-        draggedGeneratedImageSrc = null;
-
-        if (addGeneratedIconButton && addGeneratedIconButton.style.display !== 'none') {
-             generatedIconPreview.innerHTML = `
-                <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
-                <p>ここに生成されたアイコンが表示されます</p>
-            `;
-            addGeneratedIconButton.style.display = 'none';
-            if (aiPromptInput) aiPromptInput.value = '';
-        }
-    } else {
-        console.warn('draggedTaskName is null. Drop cancelled.');
-    }
-});
-
-// ... 既存のコード ...
-// ... 既存のコード ...
+    });
 
     // --- AI画像生成機能関連 ---
-    if (generateIconButton) { // 要素が存在するか確認
+    if (generateIconButton) {
         generateIconButton.addEventListener('click', () => {
             const prompt = aiPromptInput.value.trim();
             if (prompt === "") {
@@ -490,56 +403,205 @@ gridContainer.addEventListener('drop', (e) => {
                 return;
             }
 
-            console.log(`AIにアイコン「${prompt}」の生成をリクエスト中...`);
+            // AI生成中はボタンとプレビューを更新
+            generatedIconPreview.innerHTML = '<i class="fa-solid fa-hourglass-half fa-spin fa-4x" style="color: #6c5ce7;"></i><p>生成中...</p>';
+            if (addGeneratedIconButton) addGeneratedIconButton.style.display = 'none';
+            generateIconButton.disabled = true; // 生成中はボタンを無効化
+            aiPromptInput.disabled = true;
 
             // ダミーの画像生成（実際のAPI呼び出しの代わりにプレースホルダー画像）
-            const dummyImageUrl = `https://via.placeholder.com/100/A8C6FA/000000?text=${encodeURIComponent(prompt)}`;
+            // 実際にはここでサーバーへのAPIリクエストなどを行う
+            setTimeout(() => {
+                const dummyImageUrl = `https://via.placeholder.com/100/A8C6FA/000000?text=${encodeURIComponent(prompt)}`;
 
-            generatedIconPreview.innerHTML = `
-                <img src="${dummyImageUrl}" alt="Generated Icon" style="max-width:90%; max-height:90%; object-fit:contain;">
-                <p style="font-size:0.7em; margin-top:5px; color:#555;">"${prompt}"のアイコン</p>
-            `;
-            if (addGeneratedIconButton) {
-                addGeneratedIconButton.style.display = 'block';
-                addGeneratedIconButton.setAttribute('data-generated-task-name', prompt);
-                addGeneratedIconButton.setAttribute('data-generated-image-src', dummyImageUrl); // 画像URLも設定
-            }
+                generatedIconPreview.innerHTML = `
+                    <img src="${dummyImageUrl}" alt="Generated Icon" style="max-width:90%; max-height:90%; object-fit:contain;">
+                    <p style="font-size:0.7em; margin-top:5px; color:#555;">"${prompt}"のアイコン</p>
+                `;
+                if (addGeneratedIconButton) {
+                    addGeneratedIconButton.style.display = 'block';
+                    addGeneratedIconButton.setAttribute('data-generated-task-name', prompt);
+                    addGeneratedIconButton.setAttribute('data-generated-image-src', dummyImageUrl); // 画像URLも設定
+                }
+                generateIconButton.disabled = false; // ボタンを再度有効化
+                aiPromptInput.disabled = false;
+            }, 1500); // 1.5秒後に生成完了のシミュレーション
         });
     }
 
     // AI生成アイコンを「生成アイコンを追加」ボタンからクリックで追加する機能（ドラッグ＆ドロップでも追加できるため、これは補助的な機能）
-    // ... 既存のコード ...
+    if (addGeneratedIconButton) {
+        addGeneratedIconButton.addEventListener('click', () => {
+            const taskName = addGeneratedIconButton.getAttribute('data-generated-task-name');
+            const imageUrl = addGeneratedIconButton.getAttribute('data-generated-image-src');
 
-    if (addGeneratedIconButton) { // 要素が存在するか確認
-        addGeneratedIconButton.setAttribute('draggable', 'true');
-        addGeneratedIconButton.addEventListener('dragstart', (e) => {
-            if (taskDetailModal.style.display === 'flex') {
-                e.preventDefault();
-                return;
+            if (taskName && imageUrl) {
+                const newId = `task-${taskIdCounter++}`;
+                const newTask = {
+                    id: newId,
+                    name: taskName,
+                    x: 50, // デフォルト位置
+                    y: 50, // デフォルト位置
+                    generatedImageSrc: imageUrl
+                };
+                tasks.push(newTask);
+                createTaskElement(newTask);
+                saveTasks();
+                saveTaskIdCounter();
+
+                // プレビューをリセット
+                generatedIconPreview.innerHTML = `
+                    <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
+                    <p>ここに生成されたアイコンが表示されます</p>
+                `;
+                addGeneratedIconButton.style.display = 'none';
+                aiPromptInput.value = '';
             }
-            draggedTaskName = e.currentTarget.getAttribute('data-generated-task-name');
-            const imgElement = generatedIconPreview.querySelector('img');
-            draggedGeneratedImageSrc = imgElement ? imgElement.src : null;
-
-            e.dataTransfer.setData('text/plain', draggedTaskName);
-            if (draggedGeneratedImageSrc) {
-                e.dataTransfer.setData('image/x-generated-icon', draggedGeneratedImageSrc);
-            }
-            // ★★★ この行を追加/修正 ★★★
-            e.dataTransfer.effectAllowed = "copy"; // AI生成アイコンもコピーなので "copy"
-            e.currentTarget.classList.add('is-dragging');
-        });
-
-        addGeneratedIconButton.addEventListener('dragend', (e) => {
-            e.currentTarget.classList.remove('is-dragging');
-            draggedTaskName = null;
-            draggedGeneratedImageSrc = null; // リセット
         });
     }
 
-// ... 既存のコード ...
+    // --- プロジェクト保存・ロード・アーカイブ機能 (前回追加分を調整) ---
 
-    // --- イベントリスナーの追加 (既存のもの) ---
+    // 現在のプロジェクトの状態を取得する
+    const getCurrentProjectState = () => {
+        const currentTasks = [];
+        document.querySelectorAll('.task-icon').forEach(taskIcon => {
+            // taskIcon.offsetLeftとtaskIcon.offsetTopは親要素に対する相対位置
+            currentTasks.push({
+                id: taskIcon.dataset.id,
+                name: taskIcon.querySelector('span').textContent,
+                // Font AwesomeアイコンとAI生成画像の区別
+                iconHtml: taskIcon.querySelector('i') ? taskIcon.querySelector('i').className : null, // Font Awesomeの場合
+                generatedImageSrc: taskIcon.querySelector('img') ? taskIcon.querySelector('img').src : null, // AI生成画像の場合
+                x: taskIcon.offsetLeft,
+                y: taskIcon.offsetTop
+            });
+        });
+        return {
+            tasks: currentTasks,
+            lastTaskId: taskIdCounter
+        };
+    };
+
+    // プロジェクトの状態をLocalStorageに保存する
+    saveProjectButton.addEventListener('click', () => {
+        const projectName = prompt('プロジェクト名を入力してください:');
+        if (projectName) {
+            const projectState = getCurrentProjectState();
+            const timestamp = new Date().toLocaleString('ja-JP', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }); // 保存日時を日本形式で
+            const projectData = {
+                name: projectName,
+                timestamp: timestamp,
+                state: projectState
+            };
+            let projects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
+            projects.push(projectData);
+            localStorage.setItem('savedProjects', JSON.stringify(projects));
+            alert(`「${projectName}」が保存されました！`);
+            renderArchiveList(); // アーカイブリストを更新
+        }
+    });
+
+    // プロジェクトの状態をグリッドにロードする
+    const loadProject = (projectState) => {
+        // 現在のグリッド上のタスクを全て削除
+        gridContainer.innerHTML = '';
+        tasks = []; // tasks配列もクリア
+        currentZIndex = 10; // Z-indexをリセット
+
+        // ロードするプロジェクトのタスクを復元
+        projectState.tasks.forEach(task => {
+            // Font AwesomeとAI画像を区別してタスクを作成
+            let iconHtmlOrSrc;
+            if (task.generatedImageSrc) {
+                iconHtmlOrSrc = task.generatedImageSrc;
+            } else if (task.iconHtml) {
+                // Font Awesomeアイコンクラスを直接渡す
+                iconHtmlOrSrc = `<i class="${task.iconHtml}"></i>`;
+            } else {
+                iconHtmlOrSrc = '<i class="fa-solid fa-circle"></i>'; // デフォルト
+            }
+
+            const newTask = {
+                id: task.id,
+                name: task.name,
+                x: task.x,
+                y: task.y,
+                generatedImageSrc: task.generatedImageSrc // AI画像の場合はこれも復元
+            };
+            tasks.push(newTask);
+            createTaskElement(newTask);
+        });
+
+        // タスクIDカウンターも復元
+        if (projectState.lastTaskId !== undefined) {
+            taskIdCounter = projectState.lastTaskId;
+            saveTaskIdCounter(); // 復元したIDカウンターを保存
+        }
+        alert('プロジェクトがロードされました！');
+    };
+
+    // アーカイブリストをレンダリングする
+    const renderArchiveList = () => {
+        archiveList.innerHTML = ''; // 一度クリア
+        let projects = JSON.parse(localStorage.getItem('savedProjects') || '[]');
+
+        if (projects.length === 0) {
+            noArchiveMessage.style.display = 'block';
+            return;
+        } else {
+            noArchiveMessage.style.display = 'none';
+        }
+
+        projects.forEach((project, index) => {
+            const archiveItem = document.createElement('div');
+            archiveItem.classList.add('archive-item');
+            archiveItem.innerHTML = `
+                <h3>${project.name}</h3>
+                <p>保存日時: ${project.timestamp}</p>
+                <div class="actions">
+                    <button class="load-button" data-index="${index}">ロード</button>
+                    <button class="delete-archive-button" data-index="${index}">削除</button>
+                </div>
+            `;
+            archiveList.appendChild(archiveItem);
+        });
+
+        // ロードボタンと削除ボタンにイベントリスナーを追加
+        archiveList.querySelectorAll('.load-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.dataset.index, 10);
+                const projectsToLoad = JSON.parse(localStorage.getItem('savedProjects') || '[]');
+                if (projectsToLoad[index]) {
+                    if (confirm('現在のプロジェクトは保存されていません。ロードすると上書きされますがよろしいですか？')) {
+                        loadProject(projectsToLoad[index].state);
+                        // ロード後、現在のタスクを保存し直す
+                        saveTasks();
+                    }
+                }
+            });
+        });
+
+        archiveList.querySelectorAll('.delete-archive-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.dataset.index, 10);
+                if (confirm('このプロジェクトをアーカイブから削除しますか？')) {
+                    let projectsToDelete = JSON.parse(localStorage.getItem('savedProjects') || '[]');
+                    projectsToDelete.splice(index, 1); // 該当するプロジェクトを削除
+                    localStorage.setItem('savedProjects', JSON.stringify(projectsToDelete));
+                    renderArchiveList(); // リストを再レンダリング
+                }
+            });
+        });
+    };
+
+    // --- イベントリスナーの追加 (既存のものと統合) ---
     addTaskButton.addEventListener('click', addNewTask);
     newTaskNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -550,7 +612,7 @@ gridContainer.addEventListener('drop', (e) => {
     if (closeButton) closeButton.addEventListener('click', hideTaskDetail);
     if (cancelTaskButton) cancelTaskButton.addEventListener('click', hideTaskDetail);
     if (saveTaskButton) saveTaskButton.addEventListener('click', saveEditedTask);
-    if (deleteTaskButton) deleteTaskButton.addEventListener('click', deleteTask);
+    if (deleteTaskButton) deleteTaskButton.addEventListener('click', deleteTask); // 確認メッセージを関数内で処理
 
     if (taskDetailModal) {
         taskDetailModal.addEventListener('click', (e) => {
@@ -560,6 +622,23 @@ gridContainer.addEventListener('drop', (e) => {
         });
     }
 
-    // ページの読み込み時にタスクをロード
-    loadTasks();
+    // ページの読み込み時にタスクをロード & アーカイブリストを初期表示
+    const initialTasks = localStorage.getItem('twoD_todo_tasks');
+    if (initialTasks) {
+        tasks = JSON.parse(initialTasks);
+        tasks.forEach(task => createTaskElement(task));
+    } else {
+        // デフォルトのタスクを生成（初回アクセス時のみ）
+        tasks = [
+            { id: `task-${taskIdCounter++}`, name: 'メール', x: 200, y: 150, generatedImageSrc: null },
+            { id: `task-${taskIdCounter++}`, name: '友達', x: 200, y: 400, generatedImageSrc: null },
+            { id: `task-${taskIdCounter++}`, name: '本', x: 600, y: 400, generatedImageSrc: null },
+            { id: `task-${taskIdCounter++}`, name: '音楽', x: 600, y: 150, generatedImageSrc: null }
+        ];
+        saveTasks();
+        saveTaskIdCounter();
+        tasks.forEach(task => createTaskElement(task));
+    }
+
+    renderArchiveList(); // アプリケーション起動時にアーカイブリストを初期表示
 });
