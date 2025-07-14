@@ -75,7 +75,7 @@ body {
     background-image: linear-gradient(to right, #eee 1px, transparent 1px), linear-gradient(to bottom, #eee 1px, transparent 1px);
     background-size: 50px 50px;
     overflow: hidden;
-	z-index: 1;
+    z-index: 1;
 }
 
 /* --- タスクアイコン (変更なし) --- */
@@ -85,7 +85,7 @@ body {
     color: white; font-weight: bold; cursor: grab; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     transition: box-shadow 0.1s ease-in-out; font-size: 0.8em; text-align: center; overflow: hidden; padding: 5px;
     box-sizing: border-box;
-	z-index: 10;
+    z-index: 10;
 }
 .task-icon i { font-size: 2em; margin-bottom: 5px; }
 .task-icon:hover { box-shadow: 3px 3px 8px rgba(0,0,0,0.3); }
@@ -110,12 +110,77 @@ body {
     width: 100%; /* ★ 親要素(.bottom-panel)の幅に合わせる */
 }
 
+/* ★AI画像生成機能と追加機能パネルを横並びにするラッパー (新規) */
+.ai-section-wrapper {
+    display: flex;
+    flex-direction: row; /* 横並び */
+    gap: 20px;
+    width: 100%; /* 親要素の幅いっぱいに */
+    justify-content: center; /* 中央寄せ */
+    align-items: flex-start; /* 上揃え */
+}
+
 /* AI画像生成機能 */
 .ai-image-generator {
-    /* ... */
-    width: 100%; /* ★ 親要素(.bottom-panel)の幅に合わせる */
-    /* ... */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 100%; /* ★変更：ai-section-wrapperの残り幅に合わせる */
+    /* max-width: 100%; <-削除 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+    flex-grow: 1; /* ★追加：ai-section-wrapper内でスペースを埋める */
 }
+
+/* ★追加機能パネル (新規) */
+.additional-features-panel {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 100%; /* ★変更：ai-section-wrapperの残り幅に合わせる */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+    flex-grow: 1; /* ★追加：ai-section-wrapper内でスペースを埋める */
+    text-align: center;
+}
+
+.additional-features-panel h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.3em;
+}
+
+.additional-features-panel button {
+    padding: 10px 15px;
+    background-color: #ffc107; /* 黄色 */
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+}
+
+.additional-features-panel button:hover {
+    background-color: #e0a800;
+}
+
+.additional-features-panel p {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 10px;
+}
+
+
 /* --- テキスト入力フォーム (調整) --- */
 .add-task-form {
     display: flex;
@@ -164,27 +229,22 @@ body {
 .draggable-icon span {
     font-size: 0.85em; color: #555; text-align: center; word-break: break-word; line-height: 1.2;
 }
-.is-dragging { 
-	opacity: 0.5; 
-	border: 2px dashed #007bff; 
-	z-index: 1000;
+.is-dragging {
+    opacity: 0.5;
+    border: 2px dashed #007bff;
+    z-index: 1000;
 }
 
 
-/* --- AI画像生成機能 (新規) --- */
-.ai-image-generator {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 20px;
-    width: 350px; /* AI生成パネルの固定幅 */
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    flex-shrink: 0;
-}
+/* --- AI画像生成機能 (調整) --- */
+/* ai-image-generator の幅設定は ai-section-wrapper の中で flex-grow: 1 で調整されるため、
+   ここでの width: 350px は削除またはコメントアウトします。
+   代わりに、flex-basis (初期サイズ) を設定することもできますが、flex-growだけでも機能します。
+*/
+/* .ai-image-generator {
+    width: 350px;
+} */
+
 
 .ai-image-generator h3 {
     margin-top: 0;
@@ -391,9 +451,6 @@ body {
         padding: 10px;
     }
 
-    /* ... 既存のスマホ用スタイル ... */
-
-    /* ★ このブロックを追加 */
     .main-content-wrapper {
         flex-direction: column; /* スマホでは縦積みに戻す */
         gap: 0;
@@ -410,14 +467,35 @@ body {
 
     .bottom-panel {
         width: 100%;
+        /* flex-direction を row に変更し、子要素を横並びにする */
+        flex-direction: row; /* ★スマホでの bottom-panel を横並びにする */
+        flex-wrap: wrap; /* 収まらない場合は折り返す */
+        justify-content: center; /* 中央寄せ */
+        gap: 15px; /* 子要素間のギャップ */
     }
 
-    /* ... 既存のスマホ用スタイル ... */
-
     .left-section,
+    .additional-features-panel, /* ★追加 */
     .ai-image-generator {
-        width: 100%;        /* 横幅を画面いっぱいに */
-        max-width: 100%;    /* 最大幅の制限を解除 */
+        width: calc(50% - 10px); /* 2列表示にするための計算 */
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 各セクションの幅を調整（特に左側） */
+    .left-section {
+        order: 1; /* スマホでの表示順 */
+    }
+    .additional-features-panel {
+        order: 3; /* AI画像生成の下に配置 */
+    }
+    .ai-image-generator {
+        order: 2; /* スマホでの表示順 */
+    }
+
+    /* AIセクションラッパーはスマホでは不要になるため、display: contentsなどで無視 */
+    .ai-section-wrapper {
+        display: contents; /* 子要素が直接 bottom-panel の flex アイテムになるように */
     }
 
     /* --- タスク追加フォームのレイアウトを調整 --- */
@@ -428,11 +506,6 @@ body {
     .add-task-form input[type="text"],
     .add-task-form button {
         width: 100%; /* 幅を100%に */
-    }
-
-    /* --- AIアイコン生成パネルの調整 --- */
-    .ai-image-generator {
-        width: 100%; /* 横幅を画面いっぱいに */
     }
 
     /* --- タスク詳細モーダルの調整 --- */
