@@ -226,17 +226,16 @@ function createTaskElement(task) {
     }
 
     // --- タスクの削除 ---
-    function deleteTask() {
-        if (confirm("このタスクを本当に削除しますか？")) {
-            tasks = tasks.filter(t => t.id !== editingTaskId);
-            const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
-            if (taskElement) {
-                taskElement.remove();
-            }
-            saveTasks();
-            hideTaskDetail();
-        }
+   function deleteTask() {
+    // 確認メッセージなしで即時削除
+    tasks = tasks.filter(t => t.id !== editingTaskId);
+    const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
+    if (taskElement) {
+        taskElement.remove();
     }
+    saveTasks();
+    hideTaskDetail();
+}
 
     // --- ドラッグ＆ドロップ関連の関数 (既存タスクの移動用) ---
     gridContainer.addEventListener('mouseup', dragEnd);
