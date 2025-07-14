@@ -10,33 +10,34 @@ body {
     min-height: 100vh;
     padding: 20px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow-y: auto; /* 必要に応じてスクロール */
 }
 
-/* メインコンテンツを囲むラッパー (地図と右上のパネル) */
-.main-content-wrapper {
+/* 上部セクションのラッパー (グリッドと右上パネル) */
+.top-section-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
     align-items: flex-start; /* 上揃え */
     justify-content: center;
-    gap: 30px; /* 地図と右上のパネルの間のスペース */
+    gap: 30px; /* グリッドと右上パネルの間のスペース */
     width: 100%;
-    max-width: 1400px;
-    margin-bottom: 30px; /* 下の要素との間隔 */
+    max-width: 1400px; /* 全体の最大幅 */
+    margin-bottom: 30px; /* 下のセクションとの間隔 */
 }
 
 /* --- メインのグリッドコンテナ (.container) --- */
 .container {
     position: relative;
-    width: 800px;
-    height: 600px;
+    width: 800px; /* グリッドの固定幅 */
+    height: 600px; /* グリッドの固定高さ */
     max-width: 100%;
-    max-height: 80vh;
+    max-height: 80vh; /* 画面高さに対する最大値 */
     border: 1px solid #ccc;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     flex-shrink: 0; /* 縮まないように */
 }
+
 /* --- 軸のスタイル (変更なし) --- */
 .axis-y {
     position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -91,26 +92,18 @@ body {
 .task-icon.dragging { cursor: grabbing; z-index: 1000; }
 .task-icon.dragging-just-finished { pointer-events: none; }
 
-/* 右上のカラム全体を囲むラッパー */
-.top-right-column {
+/* 右上パネル (新しいタスクとアイコンパレットを囲む) */
+.top-right-panel {
     display: flex;
     flex-direction: column; /* 縦方向に要素を並べる */
-    gap: 30px; /* 各パネル間のスペース */
-    width: 400px; /* 右側のカラム全体の幅 */
-    flex-shrink: 0;
-}
-
-/* 新しいタスクフォームとアイコンパレットをまとめる */
-.add-task-form-and-palette {
-    display: flex;
-    flex-direction: column;
     gap: 20px; /* フォームとパレットの間のスペース */
+    width: 400px; /* 右上パネルの固定幅 */
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%;
     box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 /* --- テキスト入力フォーム (調整なし) --- */
@@ -163,28 +156,117 @@ body {
     z-index: 1000;
 }
 
-/* 下部エリア全体のラッパー (過去のプロジェクト、追加機能、AI生成) */
-.bottom-area-wrapper {
+/* 下部セクションのラッパー (過去のプロジェクトと追加機能/AI生成) */
+.bottom-section-wrapper {
     display: flex;
-    flex-direction: row; /* 横並びにする */
+    flex-direction: row; /* 横並び */
     align-items: flex-start; /* 上揃え */
     justify-content: center;
-    gap: 30px; /* パネル間のスペース */
+    gap: 30px; /* 過去のプロジェクトと右側パネルの間のスペース */
     width: 100%;
-    max-width: 1400px; /* main-content-wrapper と同じ幅に合わせる */
+    max-width: 1400px; /* top-section-wrapper と同じ最大幅 */
     box-sizing: border-box;
     padding: 0 20px; /* 左右の余白 */
     margin-bottom: 30px; /* 保存ボタンとの間隔 */
 }
 
-/* 追加機能とAI生成をまとめるラッパー */
-.additional-features-and-ai-wrapper {
+/* 過去のプロジェクトセクション */
+.archive-section {
+    width: 800px; /* グリッドマップと同じ幅 */
+    min-height: 200px; /* ある程度の高さを確保 */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+    box-sizing: border-box;
+    flex-shrink: 0; /* 縮まないように */
+}
+
+.archive-section h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.archive-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* 適切なサイズで折り返すグリッド */
+    gap: 20px;
+}
+
+.archive-item {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+}
+
+.archive-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.archive-item h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #007bff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.archive-item p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.archive-item .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.archive-item button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.archive-item button.load-button {
+    background-color: #007bff;
+    color: white;
+}
+.archive-item button.load-button:hover {
+    background-color: #0056b3;
+}
+
+.archive-item button.delete-archive-button {
+    background-color: #dc3545;
+    color: white;
+}
+.archive-item button.delete-archive-button:hover {
+    background-color: #c82333;
+}
+
+/* 追加機能とAIアイコン生成をまとめるラッパー */
+.additional-and-ai-panel-wrapper {
     display: flex;
     flex-direction: row; /* 横並び */
     gap: 20px; /* 各パネル間のスペース */
-    width: 100%; /* 親要素の幅いっぱいに */
-    flex-grow: 1; /* 親要素内で利用可能なスペースを埋める */
-    flex-shrink: 1; /* 必要に応じて縮む */
+    width: 400px; /* top-right-panel と同じ幅 */
+    flex-shrink: 0; /* 縮まないように */
 }
 
 /* AI画像生成機能 */
@@ -193,7 +275,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%; /* additional-features-and-ai-wrapper 内で均等に広がる */
+    width: 100%; /* additional-and-ai-panel-wrapper 内で均等に広がる */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -209,7 +291,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%; /* additional-features-and-ai-wrapper 内で均等に広がる */
+    width: 100%; /* additional-and-ai-panel-wrapper 内で均等に広がる */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -307,96 +389,6 @@ body {
 }
 .close-button:hover, .close-button:focus { color: #333; text-decoration: none; }
 
-/* アーカイブセクションのスタイル */
-.archive-section {
-    width: 800px; /* 地図の幅に合わせるか、調整可能 */
-    min-height: 200px; /* ある程度の高さを確保 */
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 30px;
-    box-sizing: border-box;
-    flex-shrink: 0; /* 縮まないように */
-}
-
-.archive-section h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 1.8em;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-
-.archive-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* 適切なサイズで折り返すグリッド */
-    gap: 20px;
-}
-
-.archive-item {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
-}
-
-.archive-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.archive-item h3 {
-    margin: 0;
-    font-size: 1.2em;
-    color: #007bff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.archive-item p {
-    margin: 0;
-    font-size: 0.9em;
-    color: #666;
-}
-
-.archive-item .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.archive-item button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.archive-item button.load-button {
-    background-color: #007bff;
-    color: white;
-}
-.archive-item button.load-button:hover {
-    background-color: #0056b3;
-}
-
-.archive-item button.delete-archive-button {
-    background-color: #dc3545;
-    color: white;
-}
-.archive-item button.delete-archive-button:hover {
-    background-color: #c82333;
-}
-
 /* プロジェクト保存ボタンのスタイル (位置調整) */
 .save-project-button {
     padding: 12px 25px;
@@ -409,7 +401,7 @@ body {
     font-weight: bold;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-top: 30px; /* bottom-area-wrapper との間隔 */
+    margin-top: 30px; /* 上のセクションとの間隔 */
 }
 
 .save-project-button:hover {
@@ -420,7 +412,7 @@ body {
 
 /* --- レスポンシブ対応 --- */
 @media (max-width: 1200px) { /* PCでも少し狭い場合の調整 */
-    .main-content-wrapper, .bottom-area-wrapper {
+    .top-section-wrapper, .bottom-section-wrapper {
         flex-direction: column; /* 横幅が狭くなったら縦積みに */
         align-items: center; /* 中央揃え */
         gap: 20px;
@@ -433,16 +425,18 @@ body {
         max-height: none;
     }
 
-    .top-right-column,
+    /* 各パネルが横幅いっぱいに */
+    .top-right-panel,
     .archive-section,
-    .additional-features-and-ai-wrapper {
-        width: 100%; /* 横幅いっぱいに */
-        max-width: 800px; /* 最大幅を設定して広がりすぎないように */
+    .additional-and-ai-panel-wrapper {
+        width: 100%;
+        max-width: 800px; /* グリッドの幅に合わせるか、適宜調整 */
         box-sizing: border-box;
     }
 
-    .additional-features-and-ai-wrapper {
-        flex-direction: column; /* 追加機能とAIも縦積みに */
+    /* 追加機能とAIパネルは縦積みに変更 */
+    .additional-and-ai-panel-wrapper {
+        flex-direction: column;
         gap: 20px;
     }
 }
@@ -452,12 +446,12 @@ body {
         padding: 10px;
     }
 
-    .main-content-wrapper, .bottom-area-wrapper {
+    .top-section-wrapper, .bottom-section-wrapper {
         gap: 15px; /* さらに狭い間隔に */
     }
 
     /* 全てのパネルが横幅いっぱいに */
-    .top-right-column,
+    .top-right-panel,
     .add-task-form-and-palette,
     .draggable-icons-container,
     .archive-section,
