@@ -1,0 +1,272 @@
+/* style.css */
+
+/* --- 全体的なレイアウト設定 --- */
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center; /* 水平中央寄せ */
+    align-items: flex-start; /* 上部に寄せる */
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto; /* 縦スクロールを許可 */
+}
+
+/* メインコンテンツを囲むラッパー */
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column; /* グリッドとその下のパネルを縦に並べる */
+    align-items: center;   /* 全体を中央寄せ */
+    width: 100%;
+    max-width: 1200px; /* 全体の最大幅を制限 */
+}
+
+/* --- メインのグリッドコンテナ (.container) --- */
+.container {
+    position: relative;
+    width: 800px; /* グリッドの推奨幅 */
+    height: 600px; /* グリッドの推奨高さ */
+    max-width: 100%; /* 画面幅が狭い場合でも対応 */
+    max-height: 80vh;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px; /* 下のパネルとの間にスペース */
+    flex-shrink: 0;
+}
+
+/* --- 軸のスタイル (変更なし) --- */
+.axis-y {
+    position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 2px; background-color: #333; z-index: 5;
+}
+.axis-y .axis-icon {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    font-size: 2em; color: #555;
+}
+.axis-y .arrow-up, .axis-y .arrow-down {
+    width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
+    position: absolute; left: 50%; transform: translateX(-50%);
+}
+.axis-y .arrow-up { border-bottom: 10px solid #333; top: 0; }
+.axis-y .arrow-down { border-top: 10px solid #333; bottom: 0; }
+
+.axis-x {
+    position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+    height: 2px; background-color: #333; z-index: 5;
+}
+.axis-x .axis-icon {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 2em; color: #555;
+}
+.axis-x .arrow-right, .axis-x .arrow-left {
+    width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+    position: absolute; top: 50%; transform: translateY(-50%);
+}
+.axis-x .arrow-right { border-left: 10px solid #333; right: 0; }
+.axis-x .arrow-left { border-right: 10px solid #333; left: 0; }
+
+/* --- グリッド背景 (変更なし) --- */
+.grid-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(to right, #eee 1px, transparent 1px), linear-gradient(to bottom, #eee 1px, transparent 1px);
+    background-size: 50px 50px;
+    overflow: hidden;
+	z-index: 1;
+}
+
+/* --- タスクアイコン (変更なし) --- */
+.task-icon {
+    position: absolute; width: 90px; height: 90px; background-color: #007bff;
+    border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    color: white; font-weight: bold; cursor: grab; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: box-shadow 0.1s ease-in-out; font-size: 0.8em; text-align: center; overflow: hidden; padding: 5px;
+    box-sizing: border-box;
+	z-index: 10;
+}
+.task-icon i { font-size: 2em; margin-bottom: 5px; }
+.task-icon:hover { box-shadow: 3px 3px 8px rgba(0,0,0,0.3); }
+.task-icon.dragging { cursor: grabbing; z-index: 1000; }
+.task-icon.dragging-just-finished { pointer-events: none; }
+
+/* --- 下部パネルのレイアウト (新規または大幅変更) --- */
+.bottom-panel {
+    display: flex; /* 子要素 (left-section と ai-image-generator) を横に並べる */
+    justify-content: center; /* 水平中央寄せ */
+    align-items: flex-start; /* 上部に寄せる */
+    gap: 30px; /* 各セクション間のスペース */
+    width: 100%;
+    max-width: 1200px; /* main-content-wrapperの幅に合わせる */
+    flex-wrap: wrap; /* 画面が狭い場合に折り返す */
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column; /* テキストフォームとパレットを縦に並べる */
+    align-items: center; /* 内部を中央寄せ */
+    gap: 20px; /* テキストフォームとパレットの間のスペース */
+    flex-shrink: 0;
+    flex-grow: 1; /* 利用可能なスペースを埋める */
+    min-width: 300px; /* 最小幅を設定 */
+    max-width: 800px; /* 最大幅を設定 */
+}
+
+/* --- テキスト入力フォーム (調整) --- */
+.add-task-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%; /* 親要素の幅いっぱいに */
+    box-sizing: border-box;
+}
+.add-task-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px; border: 1px solid #ccc; border-radius: 4px;
+}
+.add-task-form button {
+    padding: 10px 15px; background-color: #28a745; color: white;
+    border: none; border-radius: 4px; cursor: pointer; font-size: 1em;
+    transition: background-color 0.2s ease-in-out;
+}
+.add-task-form button:hover { background-color: #218838; }
+
+/* --- ドラッグ可能なアイコンパレット (調整) --- */
+.draggable-icons-container {
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%; /* 親要素の幅いっぱいに */
+    box-sizing: border-box;
+}
+.draggable-icons-container h3 { margin-top: 0; margin-bottom: 20px; color: #333; }
+.icon-palette {
+    display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;
+}
+.draggable-icon {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff;
+    cursor: grab; transition: transform 0.1s ease-in-out, box-shadow 0.2s ease;
+    width: 90px; height: 80px; box-sizing: border-box; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.draggable-icon:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.15); transform: translateY(-2px); }
+.draggable-icon i { margin-bottom: 5px; color: #3498db; font-size: 1.8em; }
+.draggable-icon span {
+    font-size: 0.85em; color: #555; text-align: center; word-break: break-word; line-height: 1.2;
+}
+.is-dragging { 
+	opacity: 0.5; 
+	border: 2px dashed #007bff; 
+	z-index: 1000;
+}
+
+
+/* --- AI画像生成機能 (新規) --- */
+.ai-image-generator {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 350px; /* AI生成パネルの固定幅 */
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.ai-image-generator h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.3em;
+}
+
+.ai-image-generator input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.ai-image-generator button {
+    padding: 10px 15px;
+    background-color: #6c5ce7; /* 紫色 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+}
+
+.ai-image-generator button:hover {
+    background-color: #4a3eb3;
+}
+
+.generated-icon-preview {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    color: #999;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.generated-icon-preview i {
+    margin-bottom: 5px;
+}
+.generated-icon-preview img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* --- タスク詳細モーダル (変更なし) --- */
+.task-detail-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); z-index: 2000;
+    justify-content: center; align-items: center;
+}
+.task-detail-content {
+    background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 350px; max-width: 90%; text-align: center; position: relative;
+}
+.task-detail-content h2 { margin-top: 0; color: #333; font-size: 1.5rem; margin-bottom: 20px; }
+.task-detail-content input[type="text"] {
+    width: calc(100% - 20px); padding: 10px; margin-bottom: 20px; border: 1px solid #ddd;
+    border-radius: 5px; font-size: 1.1rem;
+}
+.task-detail-content .buttons { display: flex; justify-content: space-around; gap: 10px; }
+.task-detail-content button {
+    padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+.task-detail-content button.save-button { background-color: #007bff; color: white; }
+.task-detail-content button.save-button:hover { background-color: #0056b3; }
+.task-detail-content button.delete-button { background-color: #dc3545; color: white; }
+.task-detail-content button.delete-button:hover { background-color: #c82333; }
+.task-detail-content button.cancel-button { background-color: #6c757d; color: white; }
+.task-detail-content button.cancel-button:hover { background-color: #5a6268; }
+.close-button {
+    position: absolute; top: 10px; right: 15px; font-size: 2rem; font-weight: bold;
+    color: #aaa; cursor: pointer; transition: color 0.2s;
+}
+.close-button:hover, .close-button:focus { color: #333; text-decoration: none; }

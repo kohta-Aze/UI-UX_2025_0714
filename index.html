@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二次元ToDoリスト</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="main-content-wrapper">
+        <div class="container">
+            <div class="axis-y">
+                <i class="fa-solid fa-clock axis-icon"></i>
+                <div class="arrow-up"></div>
+                <div class="arrow-down"></div>
+            </div>
+            <div class="axis-x">
+                <i class="fa-solid fa-music axis-icon"></i>
+                <div class="arrow-right"></div>
+                <div class="arrow-left"></div>
+            </div>
+            <div class="grid-container">
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <div class="left-section">
+                <div class="add-task-form">
+                    <input type="text" id="newTaskName" placeholder="新しいタスク名を入力">
+                    <button id="addTaskButton">タスクを追加</button>
+                </div>
+
+                <div class="draggable-icons-container">
+                    <h3>新しいアイコンをドラッグ＆ドロップで追加</h3>
+                    <div class="icon-palette">
+                        <div class="draggable-icon" data-task-name="メール">
+                            <i class="fa-solid fa-envelope fa-2x"></i>
+                            <span>メール</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="友達">
+                            <i class="fa-solid fa-face-smile fa-2x"></i>
+                            <span>友達</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="本">
+                            <i class="fa-solid fa-book fa-2x"></i>
+                            <span>本</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="音楽">
+                            <i class="fa-solid fa-music fa-2x"></i>
+                            <span>音楽</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="インターン応募">
+                            <i class="fa-solid fa-briefcase fa-2x"></i>
+                            <span>インターン応募</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="ポートフォリオ制作">
+                            <i class="fa-solid fa-folder-open fa-2x"></i>
+                            <span>ポートフォリオ制作</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="Web技術学習">
+                            <i class="fa-solid fa-code fa-2x"></i>
+                            <span>Web技術学習</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="学校">
+                            <i class="fa-solid fa-school fa-2x"></i>
+                            <span>学校</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="スポーツ">
+                            <i class="fa-solid fa-person-running fa-2x"></i>
+                            <span>スポーツ</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="設定">
+                            <i class="fa-solid fa-gear fa-2x"></i>
+                            <span>設定</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="Twitter">
+                            <i class="fa-brands fa-twitter fa-2x"></i>
+                            <span>Twitter</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="ラジオ">
+                            <i class="fa-solid fa-radio fa-2x"></i>
+                            <span>ラジオ</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="デバイス">
+                            <i class="fa-solid fa-laptop fa-2x"></i>
+                            <span>デバイス</span>
+                        </div>
+                        <div class="draggable-icon" data-task-name="連絡">
+                            <i class="fa-solid fa-hashtag fa-2x"></i>
+                            <span>連絡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-image-generator">
+                <h3>AIアイコン生成 (開発中)</h3>
+                <input type="text" id="aiPromptInput" placeholder="生成したいアイコンのキーワード">
+                <button id="generateIconButton">アイコンを生成</button>
+                <div id="generatedIconPreview" class="generated-icon-preview">
+                    <i class="fa-solid fa-robot fa-4x" style="color: #666;"></i>
+                    <p>ここに生成されたアイコンが表示されます</p>
+                </div>
+                <button id="addGeneratedIconButton" style="display: none;">生成アイコンを追加</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="taskDetailModal" class="task-detail-modal">
+        <div class="task-detail-content">
+            <span class="close-button">&times;</span>
+            <h2>タスク詳細</h2>
+            <input type="text" id="detailTaskName" placeholder="タスク名">
+            <div class="buttons">
+                <button class="save-button" id="saveTaskButton">保存</button>
+                <button class="delete-button" id="deleteTaskButton">削除</button>
+                <button class="cancel-button" id="cancelTaskButton">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
