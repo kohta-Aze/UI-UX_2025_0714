@@ -276,20 +276,18 @@ document.addEventListener('DOMContentLoaded', () => {
             hideTaskDetail();
         }
     }
-
+    
     // --- タスクの削除 ---
-    function deleteTask() {
-        if (confirm('このタスクを削除しますか？')) { // 確認メッセージを追加
-            tasks = tasks.filter(t => t.id !== editingTaskId);
-            const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
-            if (taskElement) {
-                taskElement.remove();
-            }
-            saveTasks();
-            hideTaskDetail();
-        }
-    }
-
+function deleteTask() {
+    // The confirmation dialog has been removed.
+    tasks = tasks.filter(t => t.id !== editingTaskId);
+    const taskElement = document.querySelector(`.task-icon[data-id="${editingTaskId}"]`);
+    if (taskElement) {
+        taskElement.remove();
+    }
+    saveTasks();
+    hideTaskDetail();
+}
     // --- 新しいアイコンのドラッグ＆ドロップ処理 (アイコンパレット用) ---
     draggableIcons.forEach(icon => {
         icon.setAttribute('draggable', 'true');
