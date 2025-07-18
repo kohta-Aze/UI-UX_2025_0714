@@ -106,7 +106,7 @@ body {
 /* --- グリッド背景の修正 --- */
 .grid-container {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url('quadrant_background.png'); /* Ensure this line is NOT commented out */
+    background-image: url('名称未設定.png'); /* Ensure this line is NOT commented out */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
